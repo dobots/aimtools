@@ -19,8 +19,8 @@ The AIM tools work together with the [rur-builder](https://github.com/mrquincle/
 
 * sudo apt-get install omniidl # the only dependency
 * cd /opt # or e.g. $HOME/aim, wherever you like to install from
-* git clone https://github.com/mrquincle/rur-builder.git
-* git clone https://github.com/mrquincle/aimtools.git
+* git clone https://github.com/dobots/rur-builder.git
+* git clone https://github.com/dobots/aimtools.git
 * cd aimtools
 * make; sudo make install # on the question fill in the proper rur-builder/backends directory
 * cd "your workspace"
@@ -38,9 +38,10 @@ The AIM tools work together with the [rur-builder](https://github.com/mrquincle/
 9. `git clone https://github.com/dobots/aimtools.git`
 10. `cd aimtools`
 11. `make all; sudo make install` --> AIMTools is now installed in `/usr/bin/aimcreate-pkg`
+13. Optionally: remove aimtools: `cd ..` `rm -rf aimtools`
 12. Restart your terminal to reload this new binary to the PATHs environments.
 13. Install example AIM-modules: go to your project directory, or just `cd ~`
-14. `git clone https://github.com/dobots/aim_modules.git`
+14. `git clone https://github.com/mrquincle/aim_modules.git`
 15. `cd aim-modules`
 17. Create your own module (lets call it Cusum): `aimcreate-pkg CusumModule` (note the convention to end with 'Module')
 18. `cd CusumModule`
@@ -60,6 +61,8 @@ TODO
 ### Workflow
 TODO: describe workflow, modify C(++) code, (re)build, npm republish
 
+# TODO
+Add package.json and .npmignore file to aimcreate templates, for fast npm-deployment
 
 ### Example `bindings.gyp` file
     {
