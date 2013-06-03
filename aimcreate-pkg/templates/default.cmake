@@ -10,10 +10,10 @@
 #   cp default.cmake local.cmake
 # Then change THAT file and NOT commit "local.cmake" to the repository. It should ONLY
 # be used locally. At any times the "default.cmake" file will be overwritten by the
-# global configuration file "~/.rur/rur.mk" and which is overwitten again by 
+# global configuration file "~/.rur/rur.mk" and which is overwitten again by
 # "local.cmake".
-# 
+#
 # Default backend to be used, it can be:
-#   BUILD_STANDARD, BUILD_YARP, BUILD_ROS, or BUILD_ZEROMQ
+#   BUILD_STANDARD, BUILD_YARP, BUILD_ROS, BUILD_ZEROMQ or BUILD_NODEJS
 set(BUILD_STANDARD on)
 
