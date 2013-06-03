@@ -93,6 +93,7 @@ ENDIF ()
 # Set files to be used or generated
 SET(IDL_FILE "aim/idl/${PROJECT_NAME}.idl")
 SET(HEADER_FILE "aim/inc/${PROJECT_NAME}.h")
+SET(CPP_FILE "aim/inc/${PROJECT_NAME}.cpp")
 
 # Actually generate the header files
 MESSAGE(STATUS "Run the rur-builder with arguments: \"${IDL_FILE}\", \"${MIDDLEWARE}\", \"${BACKENDS_PATH}\", \"${HEADER_FILE}\"")
