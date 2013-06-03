@@ -4,7 +4,7 @@
 AIM stands for Artificial Intelligence Modules ([AIM website](http://mrquincle.github.io/aim-bzr/)).
 
 ## What does it do?
-The AIM tools are meant for management of separate modules that each have AI functionality. They can be compared with the utilities that are provided with ROS, such as roscreate-pkg etc (of which I was not aware), or with nodejs, such as npm (of which I was neither aware). The tools work together with [rur-builder](https://github.com/mrquincle/rur-builder), a (python) backend for omniidl. 
+The AIM tools are meant for management of separate modules that each have AI functionality. They can be compared with the utilities that are provided with ROS, such as roscreate-pkg etc (of which I was not aware), or with nodejs, such as npm (of which I was neither aware). The tools work together with [rur-builder](https://github.com/mrquincle/rur-builder), a (python) backend for omniidl.
 
 The current AIM tools are tailored to [YARP](http://eris.liralab.it/yarp/) and generate code that makes it easy to work with YARP as middleware. However, nothing prevents further extensions to make it easier to wrap code as ROS modules or something else, even Java. It depends on the backends provided by the forementioned rur-builder.
 
@@ -12,7 +12,7 @@ The current AIM tools are tailored to [YARP](http://eris.liralab.it/yarp/) and g
 The maturity of this software can be improved. However, it has been used already in quite some different scenarios. One of them is to connect to the servers of an Almende spinoff in sensor data cloud services ([Sense Observation Systems](http://sense-os.nl)), another use case has been the [Surveyor](http://www.surveyor.com/SRV_info.html) robots.
 
 ## What are the alternatives?
-There are no known alternatives. Most modular approaches tie the user to a certain middleware. 
+There are no known alternatives. Most modular approaches tie the user to a certain middleware.
 
 ## How to install?
 The AIM tools work together with the [rur-builder](https://github.com/mrquincle/rur-builder). To install:
@@ -25,6 +25,94 @@ The AIM tools work together with the [rur-builder](https://github.com/mrquincle/
 * make; sudo make install # on the question fill in the proper rur-builder/backends directory
 * cd "your workspace"
 * aimcreate-pkg YourModule # convention: all AIM binaries end with "Module"
+
+## Install AIM MODULES for Node.JS packages on Mac OS X
+
+1. Install OmniORB via homebrew: `brew install omniorb`
+2. Install Rur-builder: cd to your projects directory, or just `cd ~`
+3. sudo git clone https://github.com/dobots/rur-builder.git
+4. `cd rur-builder`
+5. `sudo make install` --> The RUR-builder is now installed in `/usr/share/rur`
+7. Optionally: remove the rur-builder repository: `rm -rf ~/rur-builder` (or your other used directory)
+8. Install AIM-Tools: cd to your projects directory, or just `cd ~`
+9. `git clone https://github.com/dobots/aimtools.git`
+10. `cd aimtools`
+11. `make all; sudo make install` --> AIMTools is now installed in `/usr/bin/aimcreate-pkg`
+12. Restart your terminal to reload this new binary to the PATHs environments.
+13. Install example AIM-modules: go to your project directory, or just `cd ~`
+14. `git clone https://github.com/dobots/aim_modules.git`
+15. `cd aim-modules`
+17. Create your own module (lets call it Cusum): `aimcreate-pkg CusumModule` (note the convention to end with 'Module')
+18. `cd CusumModule`
+18. Optionally: remove old template files: `rm -i aim/*.*-e`
+19. Add Node.JS as a build target: `echo "SET(BUILD_NODEJS on)" >> aim/local.cmake`
+20. Create the Gyp information package (used to link with Node). `touch binding.gyp`. Open the file and use listing below (modify to your packagename)
+21. Create a default implementation: `touch inc/CusumModuleNode.cc`. Fill with below default listing.
+21. In the `CusumModule` directory, do make: `make`. Note: you will see an fatal error for "'node.h. file not found". This is no problem.
+22. Install gyp to link with node: `npm install -g node-gyp`
+23. Setup package with node: `node-gyp configure`
+24. Build node package: `node-gyp build`
+
+
+### Create NPM package
+TODO
+
+### Workflow
+TODO: describe workflow, modify C(++) code, (re)build, npm republish
+
+
+### Example `bindings.gyp` file
+    {
+      "targets": [
+        {
+          "target_name": "CusumModule",
+          #"type": "executable",
+          #"type": "<(library)",
+
+          "include_dirs": [
+            "/usr/include",
+            "aim/inc"
+          ],
+
+          "dependencies":[
+            # Other binding.gyp
+          ],
+
+          "cflags": [
+            "-std=c++11",
+            "-fPIC",
+          ],
+
+          "libraries": [
+          ],
+
+          "ldflags": [
+            "-pthread",
+          ],
+
+          "sources": [
+            "aim/inc/CusumModule.cpp",
+            "src/CusumModuleExt.cpp",
+            "aim/inc/CusumModuleNode.cc",
+          ],
+        }
+      ]
+    }
+
+
+### Example CusumModuleNode.cc file
+    #define BUILDING_NODE_EXTENSION
+    #include <node.h>
+    #include <CusumModuleExt.h>
+
+    using namespace v8;
+    using namespace rur;
+
+    void RegisterModule(Handle<Object> exports) {
+      CusumModuleExt::NodeRegister(exports);
+    }
+
+    NODE_MODULE(CusumModule, RegisterModule)
 
 ## How to install YARP?
 The YARP middleware is optionally. To install on Ubuntu:
@@ -79,12 +167,12 @@ The sequence of commands that you will need to execute is along the following li
 * aimget -h # to see what this command is about, you'll learn you'll need an AIM_WORKSPACE environmental variable
 * mkdir -p $HOME/myworkspace/aim
 * export AIM_WORKSPACE=$HOME/myworkspace/aim
-* aimget "mrquincle" https://github.com/mrquincle/aim_modules 
+* aimget "mrquincle" https://github.com/mrquincle/aim_modules
 * cd $AIM_WORKSPACE/mrquincle
 * cd WriteModule && make # make force=1 will make all modules
 * cd ..
 * aimregister WriteModule
-* aimrun WriteModule 0 
+* aimrun WriteModule 0
 
 Now you have gone full throttle through all the steps to get modules to in the end running them, to read more on the aim tools, and how to connect the modules, see the [AIM](http://mrquincle.github.com/aim-bzr/) website.
 
