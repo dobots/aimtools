@@ -14,6 +14,7 @@ RUR_SHARE_PATH=/usr/share/rur
 RUR_TEMPLATE_PATH=$RUR_SHARE_PATH/templates
 RUR_BACKENDS_PATH=$RUR_SHARE_PATH/backends
 RUR_CONFIG_PATH=/etc/rur
+AIM_CONFIG_PATH=/etc/aim
 
 # Configuration files
 RUR_CONFIG_FILE_BACKENDS=${RUR_CONFIG_PATH}/backends.conf
@@ -24,6 +25,17 @@ RUR_SHARE_PATH="$DESTDIR/$RUR_SHARE_PATH"
 RUR_TEMPLATE_PATH="$DESTDIR/$RUR_TEMPLATE_PATH"
 RUR_BACKENDS_PATH="$DESTDIR/$RUR_BACKENDS_PATH"
 RUR_CONFIG_PATH="$DESTDIR/$RUR_CONFIG_PATH"
+
+# Default configuration files
+AIM_CONFIG_COLOR=$AIM_CONFIG_PATH/color.sh
+AIM_CONFIG_SANITY=$AIM_CONFIG_PATH/sanity.sh
+
+####################################################################################################
+# Tweaks and general configuration details
+####################################################################################################
+
+source $AIM_CONFIG_COLOR
+source $AIM_CONFIG_SANITY
 
 ####################################################################################################
 # User configuration
@@ -39,7 +51,7 @@ fi
 
 if [[ "$1" == "" ]]
 then
-	echo "No args supplied! Run $0 -h for more info"
+	msg_warning "No args supplied! Run $0 -h for more info"
 	exit 1
 fi
 
@@ -58,7 +70,7 @@ fi
 
 if [[ $# -ne 2 ]]
 then
-	echo "[#] We need two parameters. Run $0 -h for more info, currently you used $# parameters"
+	msg_warning "We need two parameters. Run $0 -h for more info, currently you used $# parameters"
 	exit 1
 fi
 
@@ -69,19 +81,18 @@ fi
 REPOS_NAME=$1
 REPOS_URL=$2
 
-: ${AIM_WORKSPACE:? "[#] Set AIM_WORKSPACE as environmental variable before you use this tool"}
+: ${AIM_WORKSPACE:? "Set AIM_WORKSPACE as environmental variable before you use this tool"}
 
-[ ! -d $AIM_WORKSPACE ] && echo "[#] Workspace path \"$AIM_WORKSPACE\" not found" && exit 0
+[ ! -d $AIM_WORKSPACE ] && msg_info "Workspace path \"$AIM_WORKSPACE\" not found" && exit 0
 	
-echo "[#] We will use $AIM_WORKSPACE for a workspace"
+msg_info "We will use $AIM_WORKSPACE for a workspace"
 
 cd $AIM_WORKSPACE
 
 if [[ $REPOS_URL =~ .*github.* ]]; then
-	echo "[#] This is a github repository"
-	echo "[#] git clone $REPOS_URL $REPOS_NAME"
-	[ -d $REPOS_NAME ] && echo "[#] Directory \"$REPOS_NAME\" already exists" && exit 0
+	msg_info "This is a github repository"
+	msg_info "git clone $REPOS_URL $REPOS_NAME"
+	[ -d $REPOS_NAME ] && msg_info "Directory \"$REPOS_NAME\" already exists" && exit 0
 	git clone $REPOS_URL $REPOS_NAME
 fi
-
 
