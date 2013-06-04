@@ -26,9 +26,9 @@ The AIM tools work together with the [rur-builder](https://github.com/mrquincle/
 * cd "your workspace"
 * aimcreate-pkg YourModule # convention: all AIM binaries end with "Module"
 
-## Install AIM MODULES for Node.JS packages on Mac OS X
+## Install AIM MODULES for Node.JS packages
 
-1. Install OmniORB via homebrew: `brew install omniorb`
+1. Install OmniORB (e.g. via homebrew: `brew install omniorb`)
 2. Install Rur-builder: cd to your projects directory, or just `cd ~`
 3. sudo git clone https://github.com/dobots/rur-builder.git
 4. `cd rur-builder`
@@ -45,15 +45,14 @@ The AIM tools work together with the [rur-builder](https://github.com/mrquincle/
 15. `cd aim-modules`
 17. Create your own module (lets call it Cusum): `aimcreate-pkg CusumModule` (note the convention to end with 'Module')
 18. `cd CusumModule`
-18. Optionally: remove old template files: `rm -i aim/*.*-e`
+18. Optionally for Mac OS X: remove old template files: `rm -i aim/*.*-e`
 19. Add Node.JS as a build target: `echo "SET(BUILD_NODEJS on)" >> aim/local.cmake`
-20. Create the Gyp information package (used to link with Node). `touch binding.gyp`. Open the file and use listing below (modify to your packagename)
-21. Create a default implementation: `touch inc/CusumModuleNode.cc`. Fill with below default listing.
+20. Modify `binding.gyp` to your dependencies and compiler flags.
+23. Modify `inc/CusumModuleNode.cc` to your needs. Probably won't need any modifications.
+23. Modify `package.json` for Node.JS dependencies and module description
 21. In the `CusumModule` directory, do make: `make`. Note: you will see an fatal error for "'node.h. file not found". This is no problem.
 22. Install gyp to link with node: `npm install -g node-gyp`
-23. Setup package with node: `node-gyp configure`
-24. Build node package: `node-gyp build`
-
+23. Install all dependencies and build sources with `npm install`
 
 ### Create NPM package
 TODO
@@ -61,61 +60,6 @@ TODO
 ### Workflow
 TODO: describe workflow, modify C(++) code, (re)build, npm republish
 
-# TODO
-Add package.json and .npmignore file to aimcreate templates, for fast npm-deployment
-
-### Example `bindings.gyp` file
-    {
-      "targets": [
-        {
-          "target_name": "CusumModule",
-          #"type": "executable",
-          #"type": "<(library)",
-
-          "include_dirs": [
-            "/usr/include",
-            "aim/inc"
-          ],
-
-          "dependencies":[
-            # Other binding.gyp
-          ],
-
-          "cflags": [
-            "-std=c++11",
-            "-fPIC",
-          ],
-
-          "libraries": [
-          ],
-
-          "ldflags": [
-            "-pthread",
-          ],
-
-          "sources": [
-            "aim/inc/CusumModule.cpp",
-            "src/CusumModuleExt.cpp",
-            "aim/inc/CusumModuleNode.cc",
-          ],
-        }
-      ]
-    }
-
-
-### Example CusumModuleNode.cc file
-    #define BUILDING_NODE_EXTENSION
-    #include <node.h>
-    #include <CusumModuleExt.h>
-
-    using namespace v8;
-    using namespace rur;
-
-    void RegisterModule(Handle<Object> exports) {
-      CusumModuleExt::NodeRegister(exports);
-    }
-
-    NODE_MODULE(CusumModule, RegisterModule)
 
 ## How to install YARP?
 The YARP middleware is optionally. To install on Ubuntu:
