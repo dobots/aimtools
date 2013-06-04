@@ -1,15 +1,18 @@
 #!/bin/make
 
 # Author: Anne C. van Rossum
-# Date: Mar. 31, 2013
+# Date: Jun. 04, 2013
 
-# We don't need to build anything
-.PHONY: all
-all: 
-	@echo "[*] Only installation is required"
+aim_config_path=/etc/aim
+targetdir=$(DESTDIR)/$(aim_config_path)
+
+all:
+	@echo "[#] No compilation necessary (just bash scripts)"
 
 # We only install (need to be sudo)
-.PHONY: install
-install:
-	@sh install.sh
+install: | $(targetdir)
+	@cp *.sh $(targetdir)
+
+$(targetdir):
+	mkdir -p $(targetdir)
 

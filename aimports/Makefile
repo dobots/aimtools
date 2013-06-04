@@ -1,12 +1,18 @@
 #!/bin/make
 
-# Author: Scott Guo	
-# Date: Jan 3, 2012
+# Author: Anne C. van Rossum
+# Date: Jun. 04, 2013
 
-# We don't need to build anything
-all: 
+program=aimports
+targetdir=$(DESTDIR)/usr/bin
+
+all:
+	@echo "[#] No compilation necessary (just bash scripts)"
 
 # We only install (need to be sudo)
-install:
-	@sh install.sh
+install: | $(targetdir)
+	@install $(program) $(targetdir)
+
+$(targetdir):
+	mkdir -p $(targetdir)
 

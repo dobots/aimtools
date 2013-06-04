@@ -1,19 +1,18 @@
 #!/bin/make
 
 # Author: Anne C. van Rossum
-# Date: Aug. 04, 2011
+# Date: Jun. 04, 2013
 
-# This include file should define BACKEND
-#include local.mk
+program=aimupdate
+targetdir=$(DESTDIR)/usr/bin
 
-RUR_TEMPLATES=/var/lib/rur
-
-# We don't need to build anything
-all: 
-	@echo "Nothing to make, sudo make install is enough"
-	#@echo ${USER} > user.txt
+all:
+	@echo "[#] No compilation necessary (just bash scripts)"
 
 # We only install (need to be sudo)
-install:
-	@sh install.sh
+install: | $(targetdir)
+	@install $(program) $(targetdir)
+
+$(targetdir):
+	mkdir -p $(targetdir)
 

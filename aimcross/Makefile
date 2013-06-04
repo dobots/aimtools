@@ -1,20 +1,26 @@
 #!/bin/make
 
 # Author: Anne C. van Rossum
-# Date: Aug. 04, 2011
+# Date: Jun. 04, 2013
 
-# This include file should define BACKEND
-#include local.mk
+program=aimcross
 
-RUR_TEMPLATES=/var/lib/rur
+aim_share_path:=/usr/share/aim
+aim_crosscompileconf_path:=$(aim_share_path)/crosscompileconf
 
-# We don't need to build anything
-.PHONY: all
-all: 
-	@echo "[*] Only installation is required)"
+aim_crosscompileconf_path:=$(DESTDIR)/$(aim_crosscompileconf_path)
+targetdir:=$(DESTDIR)/usr/bin
+
+all:
+	@echo "[#] No compilation necessary (just bash scripts)"
 
 # We only install (need to be sudo)
-.PHONY: install
-install:
-	@sh install.sh
+install: | $(targetdir)
+	@echo install $(program) $(targetdir)
+	@install $(program) $(targetdir)
+	@echo cp conf/* $(aim_crosscompileconf_path)
+	@cp conf/* $(aim_crosscompileconf_path)
+
+$(targetdir):
+	mkdir -p $(targetdir)
 
