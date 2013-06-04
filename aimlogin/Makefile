@@ -11,6 +11,7 @@ all:
 
 # We only install (need to be sudo)
 install: | $(targetdir)
+	@echo install $(program) $(targetdir)
 	@install $(program) $(targetdir)
 
 $(targetdir):

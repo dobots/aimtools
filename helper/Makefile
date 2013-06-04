@@ -11,6 +11,7 @@ all:
 
 # We only install (need to be sudo)
 install: | $(targetdir)
+	@echo cp *.sh $(targetdir)
 	@cp *.sh $(targetdir)
 
 $(targetdir):
