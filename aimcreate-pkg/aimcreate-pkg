@@ -106,14 +106,19 @@ sed -i -e "s/TemplateModule/$modulename/g" TemplateModule.idl
 sed -i -e "s/TemplateModule/$modulename/g" TemplateModuleMain.cpp
 sed -i -e "s/TemplateModule/$modulename/g" TemplateModuleExt.cpp
 sed -i -e "s/TemplateModule/$modulename/g" TemplateModuleExt.h
+sed -i -e "s/TemplateModule/$modulename/g" TemplateModuleNode.cc
 sed -i -e "s/TemplateModule/$modulename/g" CMakeLists.txt.parent
 sed -i -e "s/TemplateModule/$modulename/g" Makefile.parent
 sed -i -e "s/TemplateModule/$modulename/g" package.xml
 sed -i -e "s/TemplateModule/$modulename/g" manifest.xml
+sed -i -e "s/TemplateModule/$modulename/g" binding.gyp.parent
+sed -i -e "s/TemplateModule/$modulename/g" package.json.parent
 
 msg_info "Move parent files to root directory of $modulename"
 mv CMakeLists.txt.parent ../CMakeLists.txt
 mv Makefile.parent ../Makefile
+mv binding.gyp.parent ../binding.gyp
+mv package.json.parent ../package.json
 
 msg_info "Move idl file to separate directory"
 mkdir -p idl
@@ -134,6 +139,7 @@ msg_info "Move header files to inc/ directory"
 mkdir -p inc
 
 mv TemplateModuleExt.h "inc/${modulename}Ext.h"
+mv TemplateModuleNode.cc "inc/${modulename}Node.cc"
 
 # Move relevant files to the ../src/ directory
 msg_info "Move source files to src/ directory"
