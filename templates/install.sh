@@ -25,16 +25,6 @@ RUR_CONFIG_FILE_BACKENDS=${RUR_CONFIG_PATH}/backends.conf
 RUR_CONFIG_FILE_BACKENDS_CMAKE=${RUR_CONFIG_PATH}/backends.cmake
 
 ####################################################################################################
-# Checks
-####################################################################################################
-
-# First, check if we have sudo rights
-if [ ! `id -u` -eq 0 ]; then
-	echo "[#] Sorry, super user rights needed (run with sudo)"
-	exit 1
-fi
-
-####################################################################################################
 # Load configuration details
 ####################################################################################################
 
@@ -61,20 +51,15 @@ echo "SET(BACKENDS_PATH $RUR_BACKENDS_PATH_WITHOUT_DESTDIR)" > "${RUR_CONFIG_FIL
 ####################################################################################################
 
 # Copy to system-wide directories
-cp -r templates/* ${RUR_TEMPLATE_PATH}
+cp -r module/* ${RUR_TEMPLATE_PATH}
 
 # Remove files we do not need per project (and obsolete ones)
-echo "[*] Remove temporary and old files from template folder"
+#echo "[*] Remove temporary and old files from template folder"
 #rm -f ${RUR_TEMPLATE_PATH}/local.mk
 #rm -f ${RUR_TEMPLATE_PATH}/rur.mk
 #rm -f ${RUR_TEMPLATE_PATH}/rur_header.mk
 
-# Copy aimcreate-pkg itself
-echo "[#] Copy aimcreate-pkg to ${RUR_BIN_PATH}"
-install aimcreate-pkg $DESTDIR/${RUR_BIN_PATH}
-
 echo "[#] Files in template directory: ${RUR_TEMPLATE_PATH}"
-ls ${RUR_TEMPLATE_PATH}
+ls -l ${RUR_TEMPLATE_PATH}
 
-echo "[#] End of aimcreate-pkg installation"
-
+echo "[#] End of templates installation"
