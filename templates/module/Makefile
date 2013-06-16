@@ -7,7 +7,7 @@ build_folder=builds/standard
 
 all:
 	@mkdir -p $(build_folder)
-	cd $(build_folder) && cmake $(CMAKE_FLAGS) ..
+	cd $(build_folder) && cmake $(CMAKE_FLAGS) ../..
 	cd $(build_folder) && make
 
 clean:
