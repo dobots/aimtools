@@ -1,45 +1,35 @@
 #!/bin/bash
 
+# Author: Anne C. van Rossum
+# License: GNU LGPLv3 
+# Date: Jun. 17, 2012
+
 PROGRAM="aimmake"
 
-VERSION="$PROGRAM 0.1"
+VERSION="0.2"
 
-####################################################################################################
+#######################################################################################################################
 # Default configuration
-####################################################################################################
+#######################################################################################################################
 
-# Installation paths
-RUR_BIN_PATH=/usr/bin
-RUR_SHARE_PATH=/usr/share/rur
-RUR_TEMPLATE_PATH=$RUR_SHARE_PATH/templates
-RUR_BACKENDS_PATH=$RUR_SHARE_PATH/backends
-RUR_CONFIG_PATH=/etc/rur
+AIM_CONFIG_PATH=/etc/aim
+AIM_CONFIG_FILE=/etc/aim/config.sh
 
-# Configuration files
-RUR_CONFIG_FILE_BACKENDS=${RUR_CONFIG_PATH}/backends.conf
-RUR_CONFIG_FILE_BACKENDS_CMAKE=${RUR_CONFIG_PATH}/backends.cmake
+source $AIM_CONFIG_FILE
+source $AIM_CONFIG_COLOR
+source $AIM_CONFIG_SANITY
 
-RUR_CONFIG_COLOR=/etc/rur/color.sh
-
-# Prepend with destination dir if DESTDIR is present
-RUR_SHARE_PATH="$DESTDIR/$RUR_SHARE_PATH"
-RUR_TEMPLATE_PATH="$DESTDIR/$RUR_TEMPLATE_PATH"
-RUR_BACKENDS_PATH="$DESTDIR/$RUR_BACKENDS_PATH"
-RUR_CONFIG_PATH="$DESTDIR/$RUR_CONFIG_PATH"
-
-source $RUR_CONFIG_COLOR
-
-####################################################################################################
+#######################################################################################################################
 # User configuration
-####################################################################################################
+#######################################################################################################################
 
 if [ -e ${RUR_CONFIG_FILE_BACKENDS} ]; then
 	source $RUR_CONFIG_FILE_BACKENDS
 fi
 
-####################################################################################################
-# Checks
-####################################################################################################
+#######################################################################################################################
+# Argument checks
+#######################################################################################################################
 
 if [[ "$1" == "" ]]
 then
@@ -49,39 +39,30 @@ fi
 
 if [[ "$1" == "-h" ]]
 then
-	echo $VERSION \- Usage
+	echo $PROGRAM $VERSION \- Usage
 	echo 
 	echo $PROGRAM \"ModuleName\"
 	echo
 	exit 0 
 fi 
 
+#######################################################################################################################
+# Specific checks
+#######################################################################################################################
+
 modulename="$1"
 
-# Check if there are no whitespaces
-mn_sanity_check=${modulename//[[:space:]]}
-
-if [[ "$mn_sanity_check" == "$1" ]]; then
-	if [[ "$1" == *Module ]]; then
-		msg_info "Compile $1"
-	else
-		msg_warning "End the module with \"Module\""
-		exit 1
-	fi
-else
-	msg_warning "Please, do not use whitespaces"
+aim_sanity $modulename error
+if [[ "$error" != 0 ]]; then
+	msg_error "Module name check failed. Unsafe to make"
 	exit 1
 fi
 
-####################################################################################################
+#######################################################################################################################
 # Start
-####################################################################################################
+#######################################################################################################################
 
 cd "$modulename"
-
-################################################################################
-# Checking and including stuff
-################################################################################
 
 target=standard
 
@@ -91,9 +72,9 @@ source /etc/apt-cross/ac-build/ac_get.sh
 #msg_info "Get platform specific compiler"
 #source /etc/apt-cross/ac-platform/$target.sh
 
-################################################################################
+#######################################################################################################################
 # Requires cmake build system
-################################################################################
+#######################################################################################################################
 
 LOG_FILE=make.log
  
@@ -177,24 +158,26 @@ final_install() {
 }
 
 build() {
- 	# Create another directory to build out-of-source
-        BUILD_DIR="build_${target}"
-        mkdir -p ${BUILD_DIR}
-        cd ${BUILD_DIR}
+	msg_debug "Source aim-config/config.aim"
+	source aim-config/config.aim
+	msg_debug "Found as build_folder: ${build_folder}"
+
+        mkdir -p ${build_folder}
+        cd ${build_folder}
  
         set_cores
         set_verbosity
         set_timing
         set_logging
  
-        cmake ..
+        cmake ../..
  
         make_and_check
 #	final_install
  
         msg_info "The result of our compilation efforts:"
-        cd ..
-        msg_info "$(file ${BUILD_DIR}/$modulename)"
+        cd ../..
+        msg_info "$(file ${build_folder}/$modulename)"
 
 }
  

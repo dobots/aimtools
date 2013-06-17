@@ -1,74 +1,65 @@
 #!/bin/bash
 
+# Author: Anne C. van Rossum
+# License: GNU LGPLv3 
+# Date: Jun. 17, 2012
+
 PROGRAM="aimrun"
 
-VERSION="$PROGRAM 0.1"
+VERSION="0.2"
 
-####################################################################################################
+#######################################################################################################################
 # Default configuration
-####################################################################################################
+#######################################################################################################################
 
-# Installation paths
-RUR_BIN_PATH=/usr/bin
-RUR_SHARE_PATH=/usr/share/rur
-RUR_TEMPLATE_PATH=$RUR_SHARE_PATH/templates
-RUR_BACKENDS_PATH=$RUR_SHARE_PATH/backends
-RUR_CONFIG_PATH=/etc/rur
+AIM_CONFIG_PATH=/etc/aim
+AIM_CONFIG_FILE=/etc/aim/config.sh
 
-# Working paths
-RUR_DATA_PATH=$HOME/.rur/data
-RUR_REGISTRY_PATH=$RUR_DATA_PATH/registry
+source $AIM_CONFIG_FILE
+source $AIM_CONFIG_COLOR
+source $AIM_CONFIG_SANITY
 
-# Configuration files
-RUR_CONFIG_FILE_BACKENDS=${RUR_CONFIG_PATH}/backends.conf
-RUR_CONFIG_FILE_BACKENDS_CMAKE=${RUR_CONFIG_PATH}/backends.cmake
-
-# Data(base) files
-AIM_REGISTRY=${RUR_DATA_PATH}/aim_registry.txt
-
-# Prepend with destination dir if DESTDIR is present
-RUR_SHARE_PATH="$DESTDIR/$RUR_SHARE_PATH"
-RUR_TEMPLATE_PATH="$DESTDIR/$RUR_TEMPLATE_PATH"
-RUR_BACKENDS_PATH="$DESTDIR/$RUR_BACKENDS_PATH"
-RUR_CONFIG_PATH="$DESTDIR/$RUR_CONFIG_PATH"
-
-
-####################################################################################################
+#######################################################################################################################
 # User configuration
-####################################################################################################
+#######################################################################################################################
 
 if [ -e ${RUR_CONFIG_FILE_BACKENDS} ]; then
 	source $RUR_CONFIG_FILE_BACKENDS
 fi
 
-####################################################################################################
-# Checks
-####################################################################################################
+#######################################################################################################################
+# Argument checks
+#######################################################################################################################
 
-# For default execution of things that only run on the server we need 2 arguments
-if [[ $# -lt 2 ]]
+if [[ "$1" == "" ]]
 then
-	echo "[#] Not enough args supplied! Run $0 -h for more info"
-	echo "[#]  (most often) because you forget an \"id\" for the module"
+	msg_error "No args supplied! Run $0 -h for more info"
 	exit 1
 fi
 
-# For execution of modules that connect to CommonSense we need 4 arguments
-# We do not check for that here...
-
 if [[ "$1" == "-h" ]]
 then
-	echo $VERSION \- Usage
+	echo $PROGRAM $VERSION \- Usage
 	echo 
 	echo $PROGRAM \"ModuleName\" \"ModuleId\"
 	echo
 	exit 0 
 fi 
 
+if [[ $# -ne 2 ]]
+then
+	msg_error "We need two parameters. Run $0 -h for more info, currently you used $# parameters"
+	exit 1
+fi
+
+#######################################################################################################################
+# Start
+#######################################################################################################################
+
 MODULE_NAME=${1%/}
 ModuleId=${2%/}
 
-echo "[#] Search in ${AIM_REGISTRY}"
+msg_info "Search in ${AIM_REGISTRY}"
 SUCCESS=false
 MODULE_FULLNAME=
 while read LINE; do
@@ -87,16 +78,16 @@ done < "${AIM_REGISTRY}"
 shift
 
 if [[ $SUCCESS == true ]]; then
-	# echo "Kill previous one"
-	# pkill -9 $MODULE_NAME
-	echo "[#] Run $MODULE_FULLNAME/build/$MODULE_NAME $@ (so with all arguments coming from the command-line)"
-	echo "[#] The following output is coming from the module itself:"
-	# yarp clean
+	msg_info "Run: \"$MODULE_FULLNAME/build/$MODULE_NAME $@\" (includes all command-line arguments)"
+	msg_info "The output of the module itself is in between two horizontal lines:"
+	echo "--------------------------------------------------------------------------------"
 	$MODULE_FULLNAME/build/$MODULE_NAME "$@"
+	echo "--------------------------------------------------------------------------------"
+	msg_info "Exit of \"$MODULE_NAME\" (error code is not returned)"
+	exit 0
 else
-	echo "[#] No such module found ($MODULE_NAME)"
+	msg_warning "No such module found ($MODULE_NAME). Did you use aimregister to register this module on this machine?"
+	exit 1
 fi
 
-echo "[#] Exit of ($MODULE_NAME)"
-exit 0
 
