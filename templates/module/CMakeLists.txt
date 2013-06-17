@@ -60,12 +60,12 @@ MESSAGE(STATUS "Search for FindX files in ${CMAKE_SOURCE_DIR}/cmake")
 SET(PARENT_INCLUDE_DIRS "")
 
 # Include aim stuff
-ADD_SUBDIRECTORY(aim)
+ADD_SUBDIRECTORY(aim-core)
 
 # Get include directories
 FOREACH(INCLDIR ${PARENT_INCLUDE_DIRS})
-  MESSAGE(STATUS "Add ${INCLDIR}")
-  INCLUDE_DIRECTORIES(${INCLDIR})
+	MESSAGE(STATUS "Add ${INCLDIR}")
+	INCLUDE_DIRECTORIES(${INCLDIR})
 ENDFOREACH()
 
 # Manually add some CXX flag (disabled by default because most cross-compilers choke on it)
@@ -89,34 +89,26 @@ SOURCE_GROUP("Header files" FILES ${FOLDER_HEADER})
 
 # Automatically add include directories if needed.
 FOREACH(HEADER_FILE ${FOLDER_HEADER})
-  GET_FILENAME_COMPONENT(HEADER_DIR ${HEADER_FILE} PATH)
-  INCLUDE_DIRECTORIES(${HEADER_DIR})
+	GET_FILENAME_COMPONENT(HEADER_DIR ${HEADER_FILE} PATH)
+	INCLUDE_DIRECTORIES(${HEADER_DIR})
 ENDFOREACH(HEADER_FILE ${FOLDER_HEADER})
 
 # For references to header files
-INCLUDE_DIRECTORIES(aim/inc)
+INCLUDE_DIRECTORIES(aim-core/inc)
 
 get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
 foreach(dir ${dirs})
-  message(STATUS "INCLUDE_DIRECTORY='${dir}'")
+	message(STATUS "INCLUDE_DIRECTORY='${dir}'")
 endforeach()
 
-SET(PROJECT_HEADER ../aim/inc/${PROJECT_NAME}.h)
-IF (NOT EXISTS ${PROJECT_HEADER})
-	MESSAGE(FATAL_ERROR "No ${PROJECT_HEADER} header file found. "
-  "Did the RurBuilder run and generate something in aim/inc? " 
-  "Did you install omniidl by e.g.\n" 
-  "  \"sudo apt-get install omniidl\"?")
-ENDIF() 
-
-MESSAGE(STATUS "Header files included: ${AIM_FILES} ${FOLDER_HEADER}")
+MESSAGE(STATUS "Header files included: ${AIM_HEADERS} ${FOLDER_HEADER}")
 
 # Set up our main executable.
 IF(FOLDER_SOURCE STREQUAL "")
-  MESSAGE(FATAL_ERROR "No source code files found. Please add something")
+	MESSAGE(FATAL_ERROR "No source code files found. Please add something")
 ELSE ()
-  ADD_EXECUTABLE(${PROJECT_NAME} ${FOLDER_SOURCE} ${FOLDER_HEADER} ${AIM_FILES})
-  TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${LIBS})
-  INSTALL(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)   
+	ADD_EXECUTABLE(${PROJECT_NAME} ${FOLDER_SOURCE} ${AIM_SOURCES} ${FOLDER_HEADER} ${AIM_HEADERS})
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${LIBS})
+	INSTALL(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
 ENDIF ()
 

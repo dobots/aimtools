@@ -60,7 +60,7 @@ then
 	echo $VERSION \- Usage
 	echo
 	echo "$PROGRAM \"ModuleName\" "
-	echo "$PROGRAM \"ModuleName\" -b [STANDARD|YARP|ROS|ZEROMQ]"
+	echo "$PROGRAM \"ModuleName\" -b [STANDARD|YARP|ROS|ZEROMQ|NODEJS]"
 	echo
 	exit 0
 fi
@@ -87,71 +87,33 @@ fi
 # Start
 ####################################################################################################
 
+# Checks
+if [ -e $modulename ]; then
+	msg_error "\"${modulename}\" already exists!"
+	exit 1
+fi
+
 # Create the proper directory
 msg_info "Create the directory $modulename"
 mkdir -p "$modulename"
 cd "$modulename"
+modulepath=$(pwd)
+msg_info "Copy from templates from \"$RUR_TEMPLATE_PATH/\" to \"$modulepath/\""
+cp -ir $RUR_TEMPLATE_PATH/* .
 
-mkdir -p aim
+msg_info "Adapt template files to use $modulename"
+# Not using -print0, since that is GNU only. Filenames should not contain any blanks!
+find . -type f | xargs sed -i -e "s/TemplateModule/$modulename/g"
 
-# Copy from template directory
-thispath=$(pwd)
-msg_info "Copy from template directory $RUR_TEMPLATE_PATH to \"$thispath\"/aim"
-cp -r $RUR_TEMPLATE_PATH/* aim
-cd aim
-
-# Adapt scripts to $modulename
-msg_info "Adapt template scripts to use $modulename"
-sed -i -e "s/TemplateModule/$modulename/g" TemplateModule.idl
-sed -i -e "s/TemplateModule/$modulename/g" TemplateModuleMain.cpp
-sed -i -e "s/TemplateModule/$modulename/g" TemplateModuleExt.cpp
-sed -i -e "s/TemplateModule/$modulename/g" TemplateModuleExt.h
-sed -i -e "s/TemplateModule/$modulename/g" TemplateModuleNode.cc
-sed -i -e "s/TemplateModule/$modulename/g" CMakeLists.txt.parent
-sed -i -e "s/TemplateModule/$modulename/g" Makefile.parent
-sed -i -e "s/TemplateModule/$modulename/g" package.xml
-sed -i -e "s/TemplateModule/$modulename/g" manifest.xml
-sed -i -e "s/TemplateModule/$modulename/g" binding.gyp.parent
-sed -i -e "s/TemplateModule/$modulename/g" package.json.parent
-
-msg_info "Move parent files to root directory of $modulename"
-mv CMakeLists.txt.parent ../CMakeLists.txt
-mv Makefile.parent ../Makefile
-mv binding.gyp.parent ../binding.gyp
-mv package.json.parent ../package.json
-
-msg_info "Move idl file to separate directory"
-mkdir -p idl
-if [ -a "idl/$modulename.idl" ]; then
-	msg_info "The idl file exists already, we will not overwrite it in case it has been adapted"
-else
-	mv TemplateModule.idl "idl/$modulename.idl"
-fi
+for F in `find . -type f -name TemplateModule*`
+do
+	mv $F ${F/TemplateModule/$modulename}
+done
 
 if [ -n "$backend" ]; then
 	msg_info "We will use backend: $backend, feel free to use other ones later on!"
-	sed -i "s/set(BUILD_STANDARD on)/set(BUILD\_$backend on)/g" default.cmake
+	sed -i "s/set(BUILD_STANDARD on)/set(BUILD\_$backend on)/g" aim-core/default.cmake
 fi
 
-# Move relevant files to the inc/ directory
-msg_info "Move header files to inc/ directory"
-#mkdir -p src
-mkdir -p inc
-
-mv TemplateModuleExt.h "inc/${modulename}Ext.h"
-mv TemplateModuleNode.cc "inc/${modulename}Node.cc"
-
-# Move relevant files to the ../src/ directory
-msg_info "Move source files to src/ directory"
-mkdir -p ../src
-
-mv TemplateModuleMain.cpp "../src/${modulename}Main.cpp"
-#mv TemplateModule.cpp "../src/${modulename}.cpp"
-mv TemplateModuleExt.cpp "../src/${modulename}Ext.cpp"
-
-#mkdir -p ../src
-
-#cp "src/${modulename}Main.cpp" "../src/${modulename}Main.cpp"
-#cp "src/${modulename}.cpp" "../src/${modulename}.cpp"
-msg_info "Done! Type make and you are good to go!"
+msg_info "Done! Type \"cd ${modulename} && make\" and you are good to go!"
 

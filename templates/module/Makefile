@@ -3,11 +3,11 @@
 # Author: Anne C. van Rossum
 # Date: Apr. 5, 2013
 
-build_folder=build_standard
+build_folder=builds/standard
 
-all: 
+all:
 	@mkdir -p $(build_folder)
-	cd $(build_folder) && cmake $(CMAKE_FLAGS) ..
+	cd $(build_folder) && cmake $(CMAKE_FLAGS) ../..
 	cd $(build_folder) && make
 
 clean:
