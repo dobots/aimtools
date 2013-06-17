@@ -20,33 +20,34 @@
 # @case    Artificial Intelligence Module
 #
 {
-  "targets": [
-    {
-      "target_name": "TemplateModule",
-
-      "include_dirs": [
-        "aim/inc"
-      ],
-
-      "dependencies":[
-      ],
-
-      "cflags": [
-        "-std=c++11"
-      ],
-
-      "libraries": [
-      ],
-
-      "ldflags": [
-        "-pthread",
-      ],
-
-      "sources": [
-        "aim/inc/TemplateModule.cpp",
-        "aim/inc/TemplateModuleNode.cc",
-        "src/TemplateModuleExt.cpp"
-      ],
-    }
-  ]
+	"targets": [
+		{
+			"target_name": "TemplateModule",
+			
+			"include_dirs": [
+				"../../inc",
+				"../../aim-core/inc"
+				
+			],
+			
+			"dependencies":[
+			],
+			
+			"cflags": [
+			],
+			
+			"libraries": [
+			],
+			
+			"ldflags": [
+				"-pthread",
+			],
+			
+			"sources":[
+				"../../aim-core/src/TemplateModule.cpp",
+				"TemplateModuleNode.cc",
+				"../../src/TemplateModuleExt.cpp"
+			],
+		}
+	]
 }

@@ -22,15 +22,15 @@
 ##########################################################################################
 
 IF(WIN32)
-  cmake_minimum_required(VERSION 2.6)
+	cmake_minimum_required(VERSION 2.6)
 ELSE(WIN32)
-  cmake_minimum_required(VERSION 2.4)
+	cmake_minimum_required(VERSION 2.4)
 ENDIF(WIN32)
 
 # The directory with all the FindXXX modules
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/aim/cmake/")
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/aim-core/cmake/")
 
-MESSAGE(STATUS "Search for FindX files in ${CMAKE_SOURCE_DIR}/aim/cmake")
+MESSAGE(STATUS "Search for FindX files in ${CMAKE_SOURCE_DIR}/aim-core/cmake")
 
 # The macro below forces the build directory to be different from source directory:
 INCLUDE( MacroEnsureOutOfSourceBuild )
@@ -45,20 +45,20 @@ OPTION(BUILD_STANDARD  "Default build option" ON)
 
 # Check first if on command line CMAKE has set one of the options
 IF (NOT (BUILD_YARP OR BUILD_ROS OR BUILD_ZEROMQ OR BUILD_NODEJS))
-  # If not, load the option from file
-  message(STATUS "Check ${CMAKE_SOURCE_DIR}/aim/local.cmake")
-  IF (EXISTS "${CMAKE_SOURCE_DIR}/aim/local.cmake")
-    MESSAGE(STATUS "Use user-defined local configuration file")
-    INCLUDE(local.cmake)
-  ELSE()
-    MESSAGE(STATUS "Use default configuration file")
-    INCLUDE(default.cmake)
-  ENDIF()
+	# If not, load the option from file
+	message(STATUS "Check ${CMAKE_SOURCE_DIR}/aim-config/local.cmake")
+	IF (EXISTS "${CMAKE_SOURCE_DIR}/aim-config/local.cmake")
+		MESSAGE(STATUS "Use user-defined local configuration file")
+		INCLUDE(${CMAKE_SOURCE_DIR}/aim-config/local.cmake)
+	ELSE()
+		MESSAGE(STATUS "Use default configuration file")
+		INCLUDE(default.cmake)
+	ENDIF()
 ENDIF()
 
 # Check again if one of the options has turned on from one of the .cmake files
 IF (BUILD_YARP OR BUILD_ROS OR BUILD_ZEROMQ OR BUILD_NODEJS)
-  SET(BUILD_STANDARD OFF)
+	SET(BUILD_STANDARD OFF)
 ENDIF ()
 
 MESSAGE(STATUS "Read \"/etc/rur/backends.cmake\" configuration file")
@@ -71,92 +71,93 @@ ENDIF()
 
 # Set commands for header generation
 IF (BUILD_YARP)
-  SET(MIDDLEWARE "yarp")
+	SET(MIDDLEWARE "yarp")
 ENDIF ()
 
 IF (BUILD_ROS)
-  SET(MIDDLEWARE "ros")
+	SET(MIDDLEWARE "ros")
 ENDIF ()
 
 IF (BUILD_ZEROMQ)
-  SET(MIDDLEWARE "zeromq")
+	SET(MIDDLEWARE "zeromq")
 ENDIF ()
 
 IF (BUILD_NODEJS)
-  SET(MIDDLEWARE "nodejs")
+	SET(MIDDLEWARE "nodejs")
 ENDIF ()
 
 IF (BUILD_STANDARD)
-  SET(MIDDLEWARE "standard")
+	SET(MIDDLEWARE "standard")
 ENDIF ()
 
 # Set files to be used or generated
-SET(IDL_FILE "aim/idl/${PROJECT_NAME}.idl")
-SET(HEADER_FILE "aim/inc/${PROJECT_NAME}.h")
-SET(CPP_FILE "aim/inc/${PROJECT_NAME}.cpp")
+SET(IDL_FILE "${CMAKE_SOURCE_DIR}/aim-config/${PROJECT_NAME}.idl")
+SET(OUT_NAME "${PROJECT_NAME}")
+SET(OUT_PATH "${CMAKE_SOURCE_DIR}/aim-core")
 
-# Actually generate the header files
-MESSAGE(STATUS "Run the rur-builder with arguments: \"${IDL_FILE}\", \"${MIDDLEWARE}\", \"${BACKENDS_PATH}\", \"${HEADER_FILE}\"")
-EXECUTE_PROCESS(COMMAND rur-builder ${IDL_FILE} ${MIDDLEWARE} ${BACKENDS_PATH} ${HEADER_FILE} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} )
+# Actually generate the source files
+MESSAGE(STATUS "Run the rur-builder with arguments: \"-i ${IDL_FILE} -b ${MIDDLEWARE} -p ${BACKENDS_PATH} -o ${OUT_PATH} -n ${OUT_NAME} \"")
+EXECUTE_PROCESS(COMMAND rur-builder -i ${IDL_FILE} -b ${MIDDLEWARE} -p ${BACKENDS_PATH} -o ${OUT_PATH} -n ${OUT_NAME} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} RESULT_VARIABLE RUR_RESULT )
 
-# NodeJS requires a cpp file
-IF (BUILD_NODEJS)
-  MESSAGE("[*] Run the rur-builder with arguments: \"${IDL_FILE}\", \"${MIDDLEWARE}_cpp\", \"${BACKENDS_PATH}\", \"${CPP_FILE}\"")
-  EXECUTE_PROCESS(COMMAND rur-builder ${IDL_FILE} ${MIDDLEWARE}_cpp ${BACKENDS_PATH} ${CPP_FILE} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} )
+IF (NOT "${RUR_RESULT}" STREQUAL "0")
+	MESSAGE(FATAL_ERROR "rur-builder did not run correctly! ${RUR_RESULT}\n"
+		"Did the rur-builder run and generate something in ${OUT_PATH}? "
+		"Did you install omniidl by e.g.\n"
+		"  \"sudo apt-get install omniidl\"?")
 ENDIF ()
 
 # Write the (backend) configuration
-MESSAGE(STATUS "Generate aim/inc/Config.h file, that you can use in the code to know which middleware is in use")
-CONFIGURE_FILE( ${CMAKE_SOURCE_DIR}/aim/config.h.cmake ${CMAKE_SOURCE_DIR}/aim/inc/Config.h )
+#MESSAGE(STATUS "Generate aim/Config.h file, that you can use in the code to know which middleware is in use")
+#CONFIGURE_FILE( ${CMAKE_SOURCE_DIR}/aim/config.h.cmake ${CMAKE_SOURCE_DIR}/aim/inc/Config.h )
 
 # Find all cmake packages
 IF (BUILD_YARP)
-  MESSAGE(STATUS "YARP build, useful for YARP middleware")
-  FIND_PACKAGE(YARP REQUIRED)
-  INCLUDE_DIRECTORIES(${YARP_INCLUDE_DIRS} PARENT_SCOPE)
-  SET(LIBS ${LIBS} ${YARP_LIBRARIES})
+	MESSAGE(STATUS "YARP build, useful for YARP middleware")
+	FIND_PACKAGE(YARP REQUIRED)
+	INCLUDE_DIRECTORIES(${YARP_INCLUDE_DIRS} PARENT_SCOPE)
+	SET(LIBS ${LIBS} ${YARP_LIBRARIES} -lrt -lpthread)
 ENDIF (BUILD_YARP)
 
 IF (BUILD_ROS)
-  MESSAGE(STATUS "The project source dir: ${PROJECT_SOURCE_DIR}")
-  IF ("$ENV{ROS_ROOT}" STREQUAL "")
-    MESSAGE(FATAL_ERROR "Requires env. variable $ROS_ROOT. Run for example: \"source /opt/ros/groovy/setup.bash\".")
-  ENDIF()
-  MESSAGE(STATUS "ROS build, useful for ROS middleware")
-  include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
-  # http://www.ros.org/wiki/rosbuild/CMakeLists#rosbuild_init
-  rosbuild_init()
+	MESSAGE(STATUS "The project source dir: ${PROJECT_SOURCE_DIR}")
+	IF ("$ENV{ROS_ROOT}" STREQUAL "")
+		MESSAGE(FATAL_ERROR "Requires env. variable $ROS_ROOT. Run for example: \"source /opt/ros/groovy/setup.bash\".")
+	ENDIF()
+	MESSAGE(STATUS "ROS build, useful for ROS middleware")
+	include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+	# http://www.ros.org/wiki/rosbuild/CMakeLists#rosbuild_init
+	rosbuild_init()
 
-  SET(INCLUDE_DIRS ${${PROJECT_NAME}_INCLUDE_DIRS})
-  SET(INCLUDE_DIRS "$ENV{ROS_ROOT}/../../include")
+	SET(INCLUDE_DIRS ${${PROJECT_NAME}_INCLUDE_DIRS})
+	SET(INCLUDE_DIRS "$ENV{ROS_ROOT}/../../include")
 
-  SET(LIBS ${LIBS} ${${PROJECT_NAME}_LIBRARIES})
-  MESSAGE(STATUS "Libraries according to rosbuild_init: ${${PROJECT_NAME}_LIBRARIES}")
-  MESSAGE(STATUS "Warning. Because these seem to be empty we will hardcode references to the libraries!")
-  SET(LIBS ${LIBS} "$ENV{ROS_ROOT}/../../lib/libroscpp.so")
-  SET(LIBS ${LIBS} "$ENV{ROS_ROOT}/../../lib/librosconsole.so")
-  SET(LIBS ${LIBS} "$ENV{ROS_ROOT}/../../lib/libroscpp_serialization.so")
+	SET(LIBS ${LIBS} ${${PROJECT_NAME}_LIBRARIES})
+	MESSAGE(STATUS "Libraries according to rosbuild_init: ${${PROJECT_NAME}_LIBRARIES}")
+	MESSAGE(STATUS "Warning. Because these seem to be empty we will hardcode references to the libraries!")
+	SET(LIBS ${LIBS} "$ENV{ROS_ROOT}/../../lib/libroscpp.so")
+	SET(LIBS ${LIBS} "$ENV{ROS_ROOT}/../../lib/librosconsole.so")
+	SET(LIBS ${LIBS} "$ENV{ROS_ROOT}/../../lib/libroscpp_serialization.so")
 
-  SET(PARENT_INCLUDE_DIRS ${INCLUDE_DIRS} PARENT_SCOPE)
+	SET(PARENT_INCLUDE_DIRS ${INCLUDE_DIRS} PARENT_SCOPE)
 ENDIF (BUILD_ROS)
 
 IF (BUILD_ZEROMQ)
-  MESSAGE(STATUS "ZeroMQ build, useful for ZeroMQ message queues")
-  FIND_PACKAGE(ZMQ REQUIRED)
-  INCLUDE_DIRECTORIES(${ZMQ_INCLUDE_DIRS})
-  SET(LIBS ${LIBS} ${ZMQ_LIBRARIES})
+	MESSAGE(STATUS "ZeroMQ build, useful for ZeroMQ message queues")
+	FIND_PACKAGE(ZMQ REQUIRED)
+	INCLUDE_DIRECTORIES(${ZMQ_INCLUDE_DIRS})
+	SET(LIBS ${LIBS} ${ZMQ_LIBRARIES})
 
-  FIND_PACKAGE(JsonSpirit REQUIRED)
-  INCLUDE_DIRECTORIES(${JSON_SPIRIT_INCLUDE_DIRS})
-  SET(LIBS ${LIBS} ${JSON_SPIRIT_LIBRARIES})
+	FIND_PACKAGE(JsonSpirit REQUIRED)
+	INCLUDE_DIRECTORIES(${JSON_SPIRIT_INCLUDE_DIRS})
+	SET(LIBS ${LIBS} ${JSON_SPIRIT_LIBRARIES})
 
-  # Currently tacitly assuming rt is always there...
-  SET(LIBS ${LIBS} rt)
+	# Currently tacitly assuming rt is always there...
+	SET(LIBS ${LIBS} rt)
 ENDIF (BUILD_ZEROMQ)
 
 IF (BUILD_NODEJS)
-  MESSAGE("[*] NodeJS build, compiles an addon")
-  MESSAGE("[*] For now: use node-gyp to build")
+	MESSAGE("[*] NodeJS build, compiles a NodeJS addon")
+	MESSAGE("[*] For now: use node-gyp to build")
 ENDIF (BUILD_NODEJS)
 
 # Source directory
@@ -175,5 +176,6 @@ ENDIF (BUILD_STANDARD)
 FILE(GLOB aim_source ${SOURCE_DIR}/*.cpp ${SOURCE_DIR}/*.cc ${SOURCE_DIR}/*.c)
 FILE(GLOB aim_header ${INCLUDE_DIR}/*.hpp ${INCLUDE_DIR}/*.hh ${INCLUDE_DIR}/*.h)
 
-SET(AIM_FILES ${aim_header} PARENT_SCOPE)
+SET(AIM_HEADERS ${aim_header} PARENT_SCOPE)
+SET(AIM_SOURCES ${aim_source} PARENT_SCOPE)
 

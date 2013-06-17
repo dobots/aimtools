@@ -7,7 +7,7 @@
 # Company: Distributed Organisms B.V.
 
 # Compile everything, but start with "helper"
-SUBDIRS=helper aimconnect aimcopy aimcreate-pkg aimcross aimget aimlist aimlogin aimports \
+SUBDIRS=helper templates aimconnect aimcopy aimcreate-pkg aimcross aimget aimlist aimlogin aimports \
 	aimregister aimrun aimselect aimstop aimupdate
 
 subdirs: $(SUBDIRS)

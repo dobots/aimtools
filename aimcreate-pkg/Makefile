@@ -3,19 +3,17 @@
 # Author: Anne C. van Rossum
 # Date: Mar. 15, 2013
 
-# We don't need to build anything
-.PHONY: all
-all: 
-	@echo "Nothing to make, sudo make install is enough"
-#	@echo ${USER} > user.txt
+program=aimcreate-pkg
+targetdir=$(DESTDIR)/usr/bin
 
-# We just run an install script (sudo is enforced in the script)
-.PHONY: install
-install:
-	@sh install.sh
+all:
+	@echo "[#] No compilation necessary (just bash scripts)"
 
-# We just run an install script (sudo is enforced in the script)
-.PHONY: uninstall
-uninstall:
-	@sh uninstall.sh
+# We only install (need to be sudo)
+install: | $(targetdir)
+	@echo install $(program) $(targetdir)
+	@install $(program) $(targetdir)
+
+$(targetdir):
+	mkdir -p $(targetdir)
 
