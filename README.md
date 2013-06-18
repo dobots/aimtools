@@ -65,34 +65,42 @@ Now you will have a module created for you. You should be able to run "make" dir
 
 Suppose this is the parameter you want to send over the commandline to the module, then you add this to the YourModule.idl file:
 
-	struct Param {
-		string filename;
-	};
+```cpp
+struct Param {
+	string filename;
+};
+```
 
 Subsequently in your YourModuleMain.cpp file you will need to set it:
 
-	int main(int argc, char *argv[])  {
-		YourModule *m = new YourModule();
-		Param * param = m->GetParam();
-		...
-		param->filename = argv[2]; // let's say it's the second argument
-		...
-	}
+```cpp
+int main(int argc, char *argv[])  {
+	YourModule *m = new YourModule();
+	Param * param = m->GetParam();
+	...
+	param->filename = argv[2]; // let's say it's the second argument
+	...
+}
+```
 
 Then, for an incoming channel, you write this in the YourModule.idl file:
 
-	interface WriteToFileModule {
-		void Input(in long data);
-	};
+```cpp
+interface WriteToFileModule {
+	void Input(in long data);
+};
+```
 
 This will automatically generate a "/data" channel for you in the case YARP is chosen as backend (more specifically, it will be /yourmodule{id}/data). The only thing you will need to do now is to write functional code that uses the channels in the stub file YourModule.cpp, for example:
 
-	void WriteToFileModule::Tick() {
-		double input = *readInput();
-		ofstream myfile(cliParam->filename.c_str(), ios::app);
-		myfile << input << '\n';
-		myfile.close();
-	}
+```cpp
+void WriteToFileModule::Tick() {
+	double input = *readInput();
+	ofstream myfile(cliParam->filename.c_str(), ios::app);
+	myfile << input << '\n';
+	myfile.close();
+}
+```
 
 As you can see the "Input" function in the YourModule.idl file has become something you can read from and which returns the proper type. All conversions necessary are done in the automatically generated header file (for example YARP does use Bottle's to communicate such datatypes, and you don't need to know anything about that using this framework).
 
