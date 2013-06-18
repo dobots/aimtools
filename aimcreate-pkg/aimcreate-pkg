@@ -99,4 +99,5 @@ fi
 
 msg_info "Done!"
 msg_info "Type \"aimmake ${modulename}\" and you are good to go!"
-msg_info "Optionally: change middleware by \"aimselect ${modulename} nodejs\"
+msg_info "Optionally: change middleware by \"aimselect ${modulename} nodejs\""
+

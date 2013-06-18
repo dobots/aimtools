@@ -44,7 +44,8 @@ then
 	echo "$PROGRAM $VERSION - Usage"
 	echo 
 	echo "$PROGRAM \"module name\" \"middleware\""
-	echo "Currently supported middlewares: $MIDDLEWARES"
+	echo 
+	echo "Currently supported middlewares: ${MIDDLEWARES[@]}"
 	exit 0 
 fi 
 
@@ -99,7 +100,8 @@ fi
 
 cd $modulename
 
-msg_info "Set \"set($build_cmd on)\" as cmake configure option in aim/local.cmake"
-echo "set($build_cmd on)" > aim-config/local.cmake
+#msg_info "Set \"set($build_cmd on)\" as cmake configure option in aim/local.cmake"
+msg_info "Set \"middleware=$middleware\" as configuration option in aim-devel/middleware_local.aim"
+echo "middleware=$middleware" > aim-devel/middleware_local.aim
 
 cd ..

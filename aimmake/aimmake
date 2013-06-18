@@ -64,7 +64,10 @@ fi
 
 cd "$modulename"
 
-target=standard
+target=host
+
+source aim-core/middleware_default.aim
+source aim-devel/middleware_local.aim
 
 msg_info "Set installation dir and get color config"
 source /etc/apt-cross/ac-build/ac_get.sh
@@ -180,7 +183,28 @@ build() {
         msg_info "$(file ${build_folder}/$modulename)"
 
 }
- 
-msg_info "Build for platform $target"
-build
 
+check_nodegyp() {
+	check=$(which node-gyp)
+	if [ "$check" == "" ]; then
+		msg_error "Sorry, node-gyp does not seem to be installed!"
+		exit
+	fi
+}
+
+build_nodejs() {
+	msg_debug "Run rur-builder specific for nodejs"
+	rur-builder -b nodejs -i aim-config/$modulename.idl -p /usr/share/rur/backends -o aim-core -n $modulename
+	cd aim-config/nodejs
+	node-gyp configure
+	node-gyp build
+	mkdir -p ../../builds/nodejs
+	rsync -avzul build/ ../../builds/nodejs
+}
+
+msg_info "Build for middleware $middleware and platform $target"
+if [ $middleware == "nodejs" ]; then
+	build_nodejs
+else
+	build
+fi

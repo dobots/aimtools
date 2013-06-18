@@ -43,23 +43,19 @@ OPTION(BUILD_ZEROMQ    "Build module with ZeroMQ" OFF)
 OPTION(BUILD_NODEJS    "Build module with NodeJS" OFF)
 OPTION(BUILD_STANDARD  "Default build option" ON)
 
-# Check first if on command line CMAKE has set one of the options
-IF (NOT (BUILD_YARP OR BUILD_ROS OR BUILD_ZEROMQ OR BUILD_NODEJS))
-	# If not, load the option from file
-	message(STATUS "Check ${CMAKE_SOURCE_DIR}/aim-config/local.cmake")
-	IF (EXISTS "${CMAKE_SOURCE_DIR}/aim-config/local.cmake")
-		MESSAGE(STATUS "Use user-defined local configuration file")
-		INCLUDE(${CMAKE_SOURCE_DIR}/aim-config/local.cmake)
-	ELSE()
-		MESSAGE(STATUS "Use default configuration file")
-		INCLUDE(default.cmake)
-	ENDIF()
-ENDIF()
-
 # Check again if one of the options has turned on from one of the .cmake files
 IF (BUILD_YARP OR BUILD_ROS OR BUILD_ZEROMQ OR BUILD_NODEJS)
 	SET(BUILD_STANDARD OFF)
 ENDIF ()
+
+EXECUTE_PROCESS(COMMAND middleware_name.sh MIDDLEWARE_NAME )
+
+IF (NOT "${MIDDLEWARE_NAME}" STREQUAL "")
+	SET(MIDDLEWARE "${MIDDLEWARE_NAME}")
+	SET(BUILD_STANDARD OFF)
+ELSE()
+	MESSAGE(STATUS "Can not determine middleware to run")
+ENDIF()
 
 MESSAGE(STATUS "Read \"/etc/rur/backends.cmake\" configuration file")
 INCLUDE(/etc/rur/backends.cmake)
