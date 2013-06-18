@@ -6,7 +6,7 @@
 
 include aim-config/config.aim
 
-all: rewrite
+all: 
 	@mkdir -p $(build_folder)
 	cd $(build_folder) && cmake $(CMAKE_FLAGS) ../..
 	cd $(build_folder) && make
