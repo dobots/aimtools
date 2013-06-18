@@ -2,9 +2,9 @@
 
 # Author: Anne C. van Rossum
 # License: GNU LGPLv3 
-# Date: Jun. 17, 2012
+# Date: Jun. 18, 2013
 
-PROGRAM="aimget"
+PROGRAM="aiminit"
 
 VERSION="0.2"
 
@@ -41,8 +41,8 @@ if [[ "$1" == "-h" ]]
 then
 	echo "$PROGRAM $VERSION - Usage"
 	echo 
-	echo "$PROGRAM \"repository name\" \"repository url\""
-	echo "  for example: $PROGRAM computervision https://github.com/mrquincle/aim_modules"
+	echo "$PROGRAM \"repository name\""
+	echo "  for example: $PROGRAM computervision"
 	echo "  the repository name will be used to be able to maintain multiple repositories"
 	echo
 	echo "Set AIM_WORKSPACE as environmental variable before you use this tool"
@@ -50,9 +50,9 @@ then
 	exit 0 
 fi 
 
-if [[ $# -ne 2 ]]
+if [[ $# -ne 1 ]]
 then
-	msg_error "We need two parameters. Run $0 -h for more info, currently you used $# parameters"
+	msg_error "We need one parameter. Run $0 -h for more info, currently you used $# parameters"
 	exit 1
 fi
 
@@ -61,7 +61,6 @@ fi
 #######################################################################################################################
 
 REPOS_NAME=$1
-REPOS_URL=$2
 
 : ${AIM_WORKSPACE:? "Set AIM_WORKSPACE as environmental variable before you use this tool"}
 
@@ -71,10 +70,18 @@ msg_info "We will use $AIM_WORKSPACE for a workspace"
 
 cd $AIM_WORKSPACE
 
-if [[ $REPOS_URL =~ .*github.* ]]; then
-	msg_info "This is a github repository"
-	msg_info "git clone $REPOS_URL $REPOS_NAME"
-	[ -d $REPOS_NAME ] && msg_info "Directory \"$REPOS_NAME\" already exists" && exit 0
-	git clone $REPOS_URL $REPOS_NAME
-fi
+#if [[ $REPOS_URL =~ .*github.* ]]; then
+#	msg_info "This is a github repository"
+#	msg_info "git clone $REPOS_URL $REPOS_NAME"
+#	[ -d $REPOS_NAME ] && msg_info "Directory \"$REPOS_NAME\" already exists" && exit 0
+#	git clone $REPOS_URL $REPOS_NAME
+#fi
+
+[ -d $REPOS_NAME ] && msg_info "Directory \"$REPOS_NAME\" already exists" && exit 0
+
+msg_info "Create repository with name: $REPOS_NAME"
+mkdir $REPOS_NAME
+
+msg_info "Initialize it as a git repository"
+git init 
 

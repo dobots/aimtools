@@ -17,57 +17,48 @@ There are no known alternatives. Most modular approaches tie the user to a certa
 ## How to install?
 The AIM tools work together with the [rur-builder](https://github.com/mrquincle/rur-builder). To install:
 
-* sudo apt-get install omniidl # the only dependency
-* cd /opt # or e.g. $HOME/aim, wherever you like to install from
-* git clone https://github.com/dobots/rur-builder.git
-* git clone https://github.com/dobots/aimtools.git
-* cd aimtools
-* make; sudo make install # on the question fill in the proper rur-builder/backends directory
-* cd "your workspace"
-* aimcreate-pkg YourModule # convention: all AIM binaries end with "Module"
+* [Debian] Install OmniIDL via apt-get: `sudo apt-get install omniidl`
+* [MAC OS X] Install OmniORB via homebrew: `brew install omniorb`
+* Install rur-builder: cd to your projects directory, or just `cd ~`, `cd ~/setup`, or whereever you prefer to install from
+* Clone the rur-builder repository: `git clone https://github.com/dobots/rur-builder.git`
+* Make the rur-builder: `cd rur-builder`, `make` and `sudo make install`, the rur-builder is now installed in `/usr/bin` and the backends in `/usr/share/rur`
+* Optionally: remove the local rur-builder repository: `rm -rf ~/rur-builder` (or your other used directory)
+* Go back to your preferred install location: `cd ~`, or `cd ~/setup`
+* Install AIMTools: `git clone https://github.com/dobots/aimtools.git`
+* Make AIMTools: `cd aimtools`, `make` and `sudo make install`, different aim* binaries are now installed in `/usr/bin`, such as `aimcreate-pkg`
+* Optionally: remove the local AIMTools repository: `rm -rf ~/aimtools` (or your other used directory)
+* [MAC OS X] Restart your terminal to reload this new binaries to the PATHs environment variable.
+* Define the environmental variable AIM\_WORKSPACE, for example: `export AIM_WORKSPACE=$HOME/aim_workspace` (this will become a collection of repositories of AI modules)
+* Add this environmental variable to your `~/.bashrc`, `~/.localrc`, or other user shell configuration file
+* Get an example repository with code for robots: `aimget robotics https://github.com/mrquincle/aim_modules`
+* Go to it and build one: `cd $AIM_WORKSPACE/robotics`, and for example `aimmake FindRobotModule` (note the convention to end with 'Module')
 
-## Install AIM MODULES for Node.JS packages
+## How to create your own module
 
-1. Install OmniORB (e.g. via homebrew: `brew install omniorb`)
-2. Install Rur-builder: cd to your projects directory, or just `cd ~`
-3. sudo git clone https://github.com/dobots/rur-builder.git
-4. `cd rur-builder`
-5. `sudo make install` --> The RUR-builder is now installed in `/usr/share/rur`
-7. Optionally: remove the rur-builder repository: `rm -rf ~/rur-builder` (or your other used directory)
-8. Install AIM-Tools: cd to your projects directory, or just `cd ~`
-9. `git clone https://github.com/dobots/aimtools.git`
-10. `cd aimtools`
-11. `make all; sudo make install` --> AIMTools is now installed in `/usr/bin/aimcreate-pkg`
-13. Optionally: remove aimtools: `cd ..` `rm -rf aimtools`
-12. Restart your terminal to reload this new binary to the PATHs environments.
-13. Install example AIM-modules: go to your project directory, or just `cd ~`
-14. `git clone https://github.com/mrquincle/aim_modules.git`
-15. `cd aim-modules`
-17. Create your own module (lets call it Cusum): `aimcreate-pkg CusumModule` (note the convention to end with 'Module')
-18. `cd CusumModule`
-18. Optionally for Mac OS X: remove old template files: `rm -i aim/*.*-e`
-19. Add Node.JS as a build target: `echo "SET(BUILD_NODEJS on)" >> aim/local.cmake`
-20. Modify `binding.gyp` to your dependencies and compiler flags.
-23. Modify `inc/CusumModuleNode.cc` to your needs. Probably won't need any modifications.
-23. Modify `package.json` for Node.JS dependencies and module description
-21. In the `CusumModule` directory, do make: `make`. Note: you will see an fatal error for "'node.h. file not found". This is no problem.
-22. Install gyp to link with node: `npm install -g node-gyp`
-23. Install all dependencies and build sources with `npm install`
+You can create your own module(s). The following shows it for a module in Node:
 
-### Create NPM package
-TODO
+* Go the aim workspace: `cd $AIM_WORKSPACE`
+* Create your own AI modules repository (say you plan to create software for the Kinect): `aiminit kinect` 
+* Go there: `cd kinect`
+* Create your own module (lets call it Cusum): `aimcreate-pkg CusumModule` (note again the convention to end with 'Module')
+* [MAC OS X] Optionally: remove old template files in it: `rm -ir *-e; rm -ir ./*/*-e` 
+* Set it up to build for Node.js: `aimselect CusumModule nodejs`
+* Build it for Node: `aimmake CusumModule`
+* Optionally: Modify `aim-config/nodejs/binding.gyp` to your dependencies and compiler flags
+* Optionally: Modify `aim-config/nodejs/package.json` for Node dependencies and add a module description
+* Optionally: Modify `CusumModuleNode.cc` to your needs. Probably won't need any modifications.
+* Build it again if you change things: `aimmake CusumModule`
+* Install gyp (globally) to link with node: `npm install -g node-gyp`
+* Install all dependencies and build sources locally with: `cd CusumModule` and `npm install`
 
-### Workflow
-TODO: describe workflow, modify C(++) code, (re)build, npm republish
+## And what about the other middlewares?
 
+You can also use your module in a completely different middleware, for example YARP. Such middleware is optionally. 
 
-## How to install YARP?
-The YARP middleware is optionally. To install on Ubuntu:
-
-* sudo add-apt-repository ppa:yarpers/yarp
-* sudo apt-get update
-* sudo apt-cache search yarp
-* sudo apt-get install libyarp yarp-bin # and perhaps yarp-view
+* [Ubuntu] sudo add-apt-repository ppa:yarpers/yarp
+* [Ubuntu] sudo apt-get update
+* [Ubuntu] sudo apt-cache search yarp
+* [Ubuntu] sudo apt-get install libyarp yarp-bin # and perhaps yarp-view
 
 ## Example
 Now you will have a module created for you. You should be able to run "make" directly in it. This will use the default .idl file and generate the proper "YourModule.h" header file in the "aim" directory.
