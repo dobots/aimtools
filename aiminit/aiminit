@@ -81,6 +81,7 @@ cd $AIM_WORKSPACE
 
 msg_info "Create repository with name: $REPOS_NAME"
 mkdir $REPOS_NAME
+cd $REPOS_NAME
 
 msg_info "Initialize it as a git repository"
 git init 

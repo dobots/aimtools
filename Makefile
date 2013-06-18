@@ -13,7 +13,7 @@
 #######################################################################################################################
 
 # Compile everything, but start with "helper" and "template"
-SUBDIRS=helper templates aimconnect aimcopy aimcreate-pkg aimcross aimget aimlist aimlogin aimmake aimports \
+SUBDIRS=helper templates aimconnect aimcopy aimcreate-pkg aimcross aimget aiminit aimlist aimlogin aimmake aimports \
 	aimregister aimrun aimselect aimstop aimupdate
 
 #######################################################################################################################
