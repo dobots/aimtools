@@ -17,11 +17,28 @@ There are no known alternatives. Most modular approaches tie the user to a certa
 ## How to install?
 The AIM tools work together with the [rur-builder](https://github.com/mrquincle/rur-builder). To install:
 
-* <img src="https://raw.github.com/dobots/aimtools/master/docs/ubuntu.png" alt="Ubuntu" style="width: 16px;"/> Install OmniIDL via apt-get: `sudo apt-get install omniidl`
-* [MAC OS X] Install OmniORB via homebrew: `brew install omniorb`
-* Install rur-builder: cd to your projects directory, or just `cd ~`, `cd ~/setup`, or whereever you prefer to install from
-* Clone the rur-builder repository: `git clone https://github.com/dobots/rur-builder.git`
-* Make the rur-builder: `cd rur-builder`, `make` and `sudo make install`, the rur-builder is now installed in `/usr/bin` and the backends in `/usr/share/rur`
+<img src="https://raw.github.com/dobots/aimtools/master/docs/logos/ubuntu.png" alt="Ubuntu" style="width: 16px;"/> Install OmniIDL via apt-get 
+
+```bash
+sudo apt-get install omniidl
+```
+<img src="https://raw.github.com/dobots/aimtools/master/docs/logos/mac-os.png" alt="Mac OS X" style="width: 16px;"/> Or install OmniIDL via homebrew
+
+```bash
+brew install omniorb
+```
+Install rur-builder, by cloning, and running make 
+
+```bash
+cd ~/setup # cd to /opt, your $HOME, or your projects directory, or where you prefer to install from
+git clone https://github.com/dobots/rur-builder.git
+cd rur-builder
+make 
+sudo make install
+```
+
+The rur-builder is now installed in `/usr/bin` and the backends in `/usr/share/rur`
+
 * Optionally: remove the local rur-builder repository: `rm -rf ~/rur-builder` (or your other used directory)
 * Go back to your preferred install location: `cd ~`, or `cd ~/setup`
 * Install AIMTools: `git clone https://github.com/dobots/aimtools.git`
