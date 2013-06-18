@@ -31,6 +31,8 @@ fi
 # Argument checks
 #######################################################################################################################
 
+MIDDLEWARES=('yarp' 'ros' 'nodejs' 'zeromq')
+
 if [[ "$1" == "" ]]
 then
 	msg_error "No args supplied! Run $0 -h for more info"
@@ -42,6 +44,7 @@ then
 	echo "$PROGRAM $VERSION - Usage"
 	echo 
 	echo "$PROGRAM \"module name\" \"middleware\""
+	echo "Currently supported middlewares: $MIDDLEWARES"
 	exit 0 
 fi 
 
@@ -88,6 +91,8 @@ if [[ $middleware == "yarp" ]]; then
 	build_cmd="BUILD_YARP"
 elif [[ $middleware == "zeromq" ]]; then
 	build_cmd="BUILD_ZEROMQ"
+elif [[ $middleware == "nodejs" ]]; then
+	build_cmd="BUILD_NODEJS"
 elif [[ $middleware == "ros" ]]; then
 	build_cmd="BUILD_ROS"
 fi
@@ -95,6 +100,6 @@ fi
 cd $modulename
 
 msg_info "Set \"set($build_cmd on)\" as cmake configure option in aim/local.cmake"
-echo "set($build_cmd on)" > aim/local.cmake
+echo "set($build_cmd on)" > aim-config/local.cmake
 
 cd ..
