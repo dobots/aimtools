@@ -67,7 +67,7 @@ echo $AIM_WORKSPACE >> ~/.bashrc # in case you use bash (check with e.g. `sh --v
 ```
 
 <img src="https://raw.github.com/dobots/aimtools/master/docs/logos/mac_os.png" alt="Mac OS X" style="width: 16px;"/> 
-Restart your terminal to reload this new binaries to the PATHs environment variable.
+Restart your terminal to reload these new binaries to the PATHs environment variable.
 
 And now you are ready to get actual AI modules:
 
@@ -108,29 +108,17 @@ void WriteToFileModule::Tick() {
 
 You can also use your module in a completely different middleware, for example YARP. Such middleware is optionally. 
 
-* [Ubuntu] sudo add-apt-repository ppa:yarpers/yarp
-* [Ubuntu] sudo apt-get update
-* [Ubuntu] sudo apt-cache search yarp
-* [Ubuntu] sudo apt-get install libyarp yarp-bin # and perhaps yarp-view
+<img src="https://raw.github.com/dobots/aimtools/master/docs/logos/ubuntu.png" alt="Ubuntu" style="width: 16px;"/> To install:
 
-## Workflow
-
-The sequence of commands that you will need to execute is along the following lines:
-
-* aimget -h # to see what this command is about, you'll learn you'll need an AIM_WORKSPACE environmental variable
-* mkdir -p $HOME/myworkspace/aim
-* export AIM_WORKSPACE=$HOME/myworkspace/aim
-* aimget "mrquincle" https://github.com/mrquincle/aim_modules
-* cd $AIM_WORKSPACE/mrquincle
-* cd WriteModule && make # make force=1 will make all modules
-* cd ..
-* aimregister WriteModule
-* aimrun WriteModule 0
-
-Now you have gone full throttle through all the steps to get modules to in the end running them, to read more on the aim tools, and how to connect the modules, see the [AIM](http://dobots.github.com/aim-bzr/) website.
+```bash
+sudo add-apt-repository ppa:yarpers/yarp
+sudo apt-get update # optionally: apt-cache search yarp
+apt-get install libyarp yarp-bin yarp-view
+```
 
 ## Where can I read more?
 * [Wikipedia (YARP)](http://en.wikipedia.org/wiki/YARP)
+* [AIM website](http://dobots.github.com/aim-bzr/) 
 
 ## Copyrights
 The copyrights (2012) belong to:
