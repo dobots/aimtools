@@ -28,9 +28,9 @@ The AIM tools work together with the [rur-builder](https://github.com/mrquincle/
 
 ## Install AIM MODULES for Node.JS packages on Mac OS X
 
-1. Install OmniORB via homebrew: `brew install omniorb`
-2. Install Rur-builder: cd to your projects directory, or just `cd ~`
-3. sudo git clone https://github.com/dobots/rur-builder.git
+1. Install OmniORB (e.g. via homebrew: `brew install omniorb`)
+2. Install Rur-builder: cd to your projects directory, or just `cd ~`, then:
+3. `sudo git clone https://github.com/dobots/rur-builder.git`
 4. `cd rur-builder`
 5. `sudo make install` --> The RUR-builder is now installed in `/usr/share/rur`
 7. Optionally: remove the rur-builder repository: `rm -rf ~/rur-builder` (or your other used directory)
@@ -45,10 +45,11 @@ The AIM tools work together with the [rur-builder](https://github.com/mrquincle/
 15. `cd aim-modules`
 17. Create your own module (lets call it Cusum): `aimcreate-pkg CusumModule` (note the convention to end with 'Module')
 18. `cd CusumModule`
-18. Optionally: remove old template files: `rm -i aim/*.*-e`
+18. Optionally for Mac OS X: remove old template files: `rm -ir *-e; rm -ir ./*/*-e` (todo: create single command to remove all files ending with `-e` in current and all sub directories.)
 19. Add Node.JS as a build target: `echo "SET(BUILD_NODEJS on)" >> aim/local.cmake`
-20. Create the Gyp information package (used to link with Node). `touch binding.gyp`. Open the file and use listing below (modify to your packagename)
-21. Create a default implementation: `touch inc/CusumModuleNode.cc`. Fill with below default listing.
+20. Modify `aim-config/nodejs/binding.gyp` to your dependencies and compiler flags.
+23. Modify `aim-config/nodejs/package.json` for Node.JS dependencies and module description
+23. Modify `CusumModuleNode.cc` to your needs. Probably won't need any modifications.
 21. In the `CusumModule` directory, do make: `make`. Note: you will see an fatal error for "'node.h. file not found". This is no problem.
 22. Install gyp to link with node: `npm install -g node-gyp`
 23. Setup package with node: `node-gyp configure`
