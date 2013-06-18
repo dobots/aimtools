@@ -4,12 +4,14 @@
 AIM stands for Artificial Intelligence Modules ([AIM website](http://dobots.github.io/aim-bzr/)).
 
 ## What does it do?
-The AIM tools are meant for management of separate modules that each have AI functionality. They can be compared with the utilities that are provided with ROS, such as roscreate-pkg etc (of which I was not aware), or with nodejs, such as npm (of which I was neither aware). The tools work together with [rur-builder](https://github.com/mrquincle/rur-builder), a (python) backend for omniidl.
+The AIM tools are meant for management of separate modules that each have AI functionality. They can be compared with the utilities that are provided with ROS, such as roscreate-pkg etc (of which we were not aware at the time), or with nodejs, such as npm (of which we were neither aware). The tools work together with [rur-builder](https://github.com/mrquincle/rur-builder), a (python) backend for omniidl. 
 
-The current AIM tools are tailored to [YARP](http://eris.liralab.it/yarp/) and generate code that makes it easy to work with YARP as middleware. However, nothing prevents further extensions to make it easier to wrap code as ROS modules or something else, even Java. It depends on the backends provided by the forementioned rur-builder.
+The current AIM tools have been in operational mode for a long time with [YARP](http://eris.liralab.it/yarp/). The newest useful addition has been Node.js, which allows us to deploy the modules using the npm (node package manager) system.
+
+The goal of the AIM tools is to allow programmers to do rapid prototyping for multiple platforms and connecting them by multiple means without being bothered by the middleware specifics. We want you to be able to run a module on your smartphone, connect it to a server that you happen to have, and go from there to your raspberry PI and your television set. We do want to build an ecosystem where many AI modules are working together and do want to allow you to run our software on your own servers. Monetizing this ecosystem will be via the website [dodedodo.com](http://www.dodedodo.com/) that will allow you to find other modules and function as a hub to download binaries from, it will not be the place though which all application traffic has to pass, but just a sophisticated name service.
 
 ## Is it good?
-The maturity of this software can be improved. However, it has been used already in quite some different scenarios. One of them is to connect to the servers of an Almende spinoff in sensor data cloud services ([Sense Observation Systems](http://sense-os.nl)), another use case has been the [Surveyor](http://www.surveyor.com/SRV_info.html) robots.
+The maturity of this software can be improved. However, it has been used already in quite some different scenarios. One of them is to connect to the servers of an Almende spinoff in sensor data cloud services ([Sense Observation Systems](http://sense-os.nl)), another use case has been the [Surveyor](http://www.surveyor.com/SRV_info.html) robots, a third on the unmanned aerial vehicles of [FireSwarm](http://www.fireswarm.nl).
 
 ## What are the alternatives?
 There are no known alternatives. Most modular approaches tie the user to a certain middleware.
