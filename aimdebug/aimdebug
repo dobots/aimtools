@@ -1,0 +1,82 @@
+#!/bin/bash
+
+# Author: Anne C. van Rossum
+# License: GNU LGPLv3 
+# Date: Jun. 17, 2012
+
+PROGRAM="aimdebug"
+
+VERSION="0.2"
+
+#######################################################################################################################
+# Default configuration
+#######################################################################################################################
+
+AIM_CONFIG_PATH=/etc/aim
+AIM_CONFIG_FILE=/etc/aim/config.sh
+
+source $AIM_CONFIG_FILE
+source $AIM_CONFIG_COLOR
+source $AIM_CONFIG_SANITY
+
+#######################################################################################################################
+# User configuration
+#######################################################################################################################
+
+if [ -e ${RUR_CONFIG_FILE_BACKENDS} ]; then
+	source $RUR_CONFIG_FILE_BACKENDS
+fi
+
+#######################################################################################################################
+# Argument checks
+#######################################################################################################################
+
+if [[ "$1" == "" ]]
+then
+	msg_error "No args supplied! Run $0 -h for more info"
+	exit 1
+fi
+
+if [[ "$1" == "-h" ]]
+then
+	echo $PROGRAM $VERSION \- Usage
+	echo
+	echo "$PROGRAM \"ModuleName\" "
+	echo
+	exit 0
+fi
+
+if [[ $# -ne 1 ]]
+then
+	msg_error "We need one parameter. Run $0 -h for more info, currently you used $# parameters"
+	exit 1
+fi
+
+#######################################################################################################################
+# Start
+#######################################################################################################################
+
+MODULENAME=$1
+
+LOG=aimdebug.log
+
+COMMAND[0]='which git'
+COMMAND[1]='which cmake'
+COMMAND[2]='which rur-builder'
+COMMAND[3]='which omniidl'
+COMMAND[4]='rur-builder -h'
+COMMAND[5]='cat /etc/lsb-release'
+COMMAND[6]='aimcreate-pkg -h'
+COMMAND[7]='cat /etc/rur/backends.cmake'
+COMMAND[8]="cat $MODULENAME/aim-core/middleware_default.aim"
+
+for cmd in "${COMMAND[@]}"
+do
+	echo "********************************************************************************" >> $LOG
+	echo "$cmd" >> $LOG
+	$cmd >> $LOG
+	echo >> $LOG
+done
+
+echo "********************************************************************************" >> $LOG
+

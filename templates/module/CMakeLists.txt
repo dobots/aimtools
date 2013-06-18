@@ -40,22 +40,10 @@ SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 MESSAGE(STATUS "Search for FindX files in ${CMAKE_SOURCE_DIR}/cmake")
 
 ##########################################################################################
-# Section to include your own FindX cmake files and options
+# Include your own FindX cmake files and options in the following file!
 ##########################################################################################
 
 INCLUDE(CustomBuild.cmake OPTIONAL)
-
-## Example of the content of such a CustomBuild.cmake file:
-#
-## In this case, suppose, we need the EIGEN library (for Matrix manipulations).
-#
-# OPTION(BUILD_EIGEN OFF "Build module with Eigen support")
-# CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/config.h.in ${CMAKE_SOURCE_DIR}/inc/config.h)
-# IF (BUILD_EIGEN) 
-# 	MESSAGE(STATUS "Eigen support, this will enable all (sparse) matrix related code")
-# 	FIND_PACKAGE(Eigen3 REQUIRED)
-# 	INCLUDE_DIRECTORIES(${EIGEN3_INCLUDE_DIR})
-# ENDIF()
 
 ##########################################################################################
 
@@ -103,6 +91,13 @@ get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTO
 foreach(dir ${dirs})
 	message(STATUS "INCLUDE_DIRECTORY='${dir}'")
 endforeach()
+
+SET(PROJECT_HEADER ../aim-core/inc/${PROJECT_NAME}.h)
+IF (NOT EXISTS ${PROJECT_HEADER})
+	MESSAGE(FATAL_ERROR "No ${PROJECT_HEADER} header file found."
+		"Did the RurBuilder run and generate a header file (with content) in aim-core/inc?"
+		"Did you perhaps forget to install omniidl/omniORB or do you need to update the RurBuilder itself?")
+ENDIF() 
 
 MESSAGE(STATUS "Header files included: ${AIM_HEADERS} ${FOLDER_HEADER}")
 

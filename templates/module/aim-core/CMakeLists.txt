@@ -92,15 +92,21 @@ SET(OUT_NAME "${PROJECT_NAME}")
 SET(OUT_PATH "${CMAKE_SOURCE_DIR}/aim-core")
 
 # Actually generate the source files
-MESSAGE(STATUS "Run the rur-builder with arguments: \"-i ${IDL_FILE} -b ${MIDDLEWARE} -p ${BACKENDS_PATH} -o ${OUT_PATH} -n ${OUT_NAME} \"")
-EXECUTE_PROCESS(COMMAND rur-builder -i ${IDL_FILE} -b ${MIDDLEWARE} -p ${BACKENDS_PATH} -o ${OUT_PATH} -n ${OUT_NAME} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} RESULT_VARIABLE RUR_RESULT )
+FIND_PROGRAM(RUR_BUILDER rur-builder)
 
-IF (NOT "${RUR_RESULT}" STREQUAL "0")
-	MESSAGE(FATAL_ERROR "rur-builder did not run correctly! ${RUR_RESULT}\n"
-		"Did the rur-builder run and generate something in ${OUT_PATH}? "
-		"Did you install omniidl by e.g.\n"
-		"  \"sudo apt-get install omniidl\"?")
+IF (RUR_BUILDER)
+	MESSAGE(STATUS "Run the rur-builder with arguments: \"-i ${IDL_FILE} -b ${MIDDLEWARE} -p ${BACKENDS_PATH} -o ${OUT_PATH} -n ${OUT_NAME} \"")
+	EXECUTE_PROCESS(COMMAND rur-builder -i ${IDL_FILE} -b ${MIDDLEWARE} -p ${BACKENDS_PATH} -o ${OUT_PATH} -n ${OUT_NAME} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} RESULT_VARIABLE RUR_RESULT )
+
+	IF (NOT "${RUR_RESULT}" STREQUAL "0")
+		MESSAGE(FATAL_ERROR "The rur-builder did not run correctly! ${RUR_RESULT}\n"
+			"The rur-builder did probably run, so it might be an error in this specific backend for ${MIDDLEWARE}"
+			"Please, submit an issue at https://github.com/dobots/aimtools"
+			"And, if you don't mind, attach the output of aimdebug to that issue")
+	ENDIF ()
+
 ENDIF ()
+
 
 # Write the (backend) configuration
 #MESSAGE(STATUS "Generate aim/Config.h file, that you can use in the code to know which middleware is in use")
