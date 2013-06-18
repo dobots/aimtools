@@ -27,6 +27,11 @@ INSTALL_SUBDIRS=$(addsuffix .install,$(SUBDIRS))
 
 #######################################################################################################################
 
+program=aim
+targetdir=$(DESTDIR)/usr/bin
+
+#######################################################################################################################
+
 subdirs: $(SUBDIRS)
 
 install-subdirs: $(INSTALL_SUBDIRS)
@@ -44,13 +49,18 @@ $(INSTALL_SUBDIRS): %.install:
 
 all: subdirs
 
-install: install-subdirs
+install: install-subdirs | $(targetdir)
+	@echo install $(program) $(targetdir)
+	@install $(program) $(targetdir)
 
 clean:
 	@echo "Not implemented to clean targets yet"
 
 uninstall:
 	@echo "Not implemented to uninstall targets (use your default package manager or checkinstall)"
+
+$(targetdir):
+	mkdir -p $(targetdir)
 
 #######################################################################################################################
 

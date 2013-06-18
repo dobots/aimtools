@@ -1,56 +1,77 @@
 #!/bin/bash
 
-PROGRAM="$0"
-VERSION="$PROGRAM 0.1"
-#DATE=`date -d @1353294612 "+%Y-%m-%d %T"`
-DATE=`date "+%b%d_%H.%M"`
+# Author: Anne C. van Rossum
+# License: GNU LGPLv3 
+# Date: Jun. 17, 2012
 
-THREENODESPATH="/home/$USER/server/ThreeNodes.js"
-LOG="/home/$USER/aimlog_${DATE}"
+PROGRAM="aim"
 
-THREENODESPATH="/home/$USER/myworkspace/rur/ThreeNodes/git_threenodes"
+VERSION="0.2"
 
-echo "Run server from $THREENODESPATH"
-echo "Write to log $LOG"
+#######################################################################################################################
+# Default configuration
+#######################################################################################################################
+
+AIM_CONFIG_PATH=/etc/aim
+AIM_CONFIG_FILE=/etc/aim/config.sh
+
+source $AIM_CONFIG_FILE
+source $AIM_CONFIG_COLOR
+source $AIM_CONFIG_SANITY
+
+#######################################################################################################################
+# User configuration
+#######################################################################################################################
+
+if [ -e ${RUR_CONFIG_FILE_BACKENDS} ]; then
+	source $RUR_CONFIG_FILE_BACKENDS
+fi
+
+#######################################################################################################################
+# Argument checks
+#######################################################################################################################
 
 if [[ "$1" == "" ]]
 then
-	echo "No args supplied! Run $0 -h for more info"
+	msg_error "No args supplied! Run $0 -h for more info"
 	exit 1
 fi
 
-if [[ "$1" == "-h" ]]
+if [[ "$1" == "-h" || "$1" == "help" ]]
 then
-	echo $VERSION \- Usage
+	echo "$PROGRAM $VERSION - Usage"
 	echo 
-	echo $PROGRAM --stop
-	echo $PROGRAM --start
+	echo "$PROGRAM \"command\" [options]"
+	echo
+	echo "Currently supported commands:"
+	echo
+	echo " aimget: add a github repository to your AIM workspace"
+	echo " aiminit: create your own local github repository in your AIM workspace"
+	echo " aimcreate-pkg: create a new AI module"
+	echo " aimregister: register the module locally"
+	echo " aimselect: select a specific middleware to compile for"
+	echo " aimmake: compile the module"
+	echo " aimcross: cross-compile the module (currently supported: blackfin; upcoming: raspberry)"
+	echo " aimrun: run a previously registered module"
+	echo " aimconnect: connect two ports on running modules"
+	echo " aimstop: stop the module locally"
 	exit 0 
 fi 
 
-if [[ "$1" == "--start" ]]
-then
-	process_id=`ps aux | grep -v grep | grep "node server.js" | awk '{print (/^\// ? $1 : $2) }'`
-	if [[ $process_id == "" ]]
-	then
-		echo "Start aim"
-		( cd $THREENODESPATH && node server.js > $LOG &)
-	else
-		echo "It seems aim runs already, first stop by $PROGRAM --stop"
-		exit 1
-	fi
-fi
+#######################################################################################################################
+# Start
+#######################################################################################################################
 
-if [[ "$1" == "--stop" ]]
-then
-	echo "Stop aim"
-	process_id=`ps aux | grep -v grep | grep "node server.js" | awk '{print (/^\// ? $1 : $2) }'`
-	if [[ $process_id == "" ]]
-	then
-		echo "It seems aim does not run, if I am wrong, kill it manually, sorry!"
-		exit 1
-	else
-		kill $process_id
-	fi
-fi
+COMMAND=$1
+
+EXEC=aim$COMMAND
+
+AIMTOOL_EXISTS=$(command -v $EXEC)
+
+[ -z $AIMTOOL_EXISTS ] && msg_info "This aim tool \"$EXEC\" cannot be found" && exit 0
+
+shift
+
+msg_info "Execute: $EXEC $@"	
+$EXEC $@
 
