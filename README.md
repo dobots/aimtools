@@ -17,7 +17,7 @@ There are no known alternatives. Most modular approaches tie the user to a certa
 ## How to install?
 The AIM tools work together with the [rur-builder](https://github.com/mrquincle/rur-builder). To install:
 
-* ![alt text](https://raw.github.com/dobots/aimtools/master/docs/ubuntu.png "Ubuntu") Install OmniIDL via apt-get: `sudo apt-get install omniidl`
+* <img src="https://raw.github.com/dobots/aimtools/master/docs/ubuntu.png" alt="Ubuntu" style="width: 16px;"/> Install OmniIDL via apt-get: `sudo apt-get install omniidl`
 * [MAC OS X] Install OmniORB via homebrew: `brew install omniorb`
 * Install rur-builder: cd to your projects directory, or just `cd ~`, `cd ~/setup`, or whereever you prefer to install from
 * Clone the rur-builder repository: `git clone https://github.com/dobots/rur-builder.git`
