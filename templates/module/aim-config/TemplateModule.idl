@@ -6,17 +6,17 @@
  * of the function variables are not used. For now, if the function variable 
  * ends with a number, like "void Sensor(in long input2);" there will be two
  * portnames created.
- *
- * Author: 
- * Copyright: 
- * Date: 
- * License: 
  */
+
+#pragma author You
+#pragma copyright Your Company
+#pragma date 21 Jun. 2013
+#pragma license LGPLv3
 
 // Recommended namespace "rur"
 module rur {
 
-// The command-line parameters
+// The command-line parameter (this struct is required)
 struct Param {
   // multiple modules can be addressed in parallel, killed, etc. using "module_id"
   string module_id;
@@ -27,7 +27,7 @@ struct Param {
 // Typedef for array of integers
 typedef sequence<long> long_seq;
 
-// We want to be able to give our class a name
+// The public interface of TemplateModule
 interface TemplateModule {
 
   // Input from microphone in the form of an array

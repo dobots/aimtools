@@ -125,7 +125,7 @@ check_errors() {
 		ESCAPE_ERRORS=`echo ${ERRORS} | sed 's|["'\''\`]||g'`
 		echo "echo \"   ${ESCAPE_ERRORS} \"" >> ${ERROR_SCRIPT}
 		chmod a+x ${ERROR_SCRIPT}
-		msg_error "There are errors! Run ./check_error.sh"
+		msg_error "There are errors!"
 	else
 		msg_info "There are no errors found"
 	fi
