@@ -101,5 +101,5 @@ fi
 omniidl -p${RUR_BACKENDS_PATH} -brur_extract -Wbstandard -K "${IDL_FOLDER}/${MODULE_NAME}.idl" > "ports.txt"
 
 msg_info "Write port definition to ${MODULE_NAME}.ports file in registry"
-cp ports.txt ${RUR_REGISTRY_PATH}/${MODULE_NAME}.ports
+mv ports.txt ${RUR_REGISTRY_PATH}/${MODULE_NAME}.ports
 
