@@ -62,6 +62,11 @@ fi
 # Start
 #######################################################################################################################
 
+if [ ! -d "$modulename" ]; then
+	msg_error "Directory with module name $modulename does not exist"
+	exit 1
+fi
+
 cd "$modulename"
 
 target=host

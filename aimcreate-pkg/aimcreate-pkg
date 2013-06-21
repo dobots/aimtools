@@ -83,6 +83,10 @@ modulepath=$(pwd)
 msg_info "Copy from templates from \"$RUR_TEMPLATE_PATH/\" to \"$modulepath/\""
 cp -ir $RUR_TEMPLATE_PATH/* .
 
+msg_info "Create masks for build directories in a .gitignore file"
+echo "builds/" >> .gitignore
+echo "aim-devel/" >> .gitignore
+
 msg_info "Adapt template files to use $modulename"
 # Not using -print0, since that is GNU only. Filenames should not contain any blanks!
 find . -type f | xargs sed -i -e "s/TemplateModule/$modulename/g"

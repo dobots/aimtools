@@ -59,6 +59,8 @@ fi
 MODULE_NAME=${1%/}
 ModuleId=${2%/}
 
+BUILD_FOLDER=builds/standard
+
 msg_info "Search in ${AIM_REGISTRY}"
 SUCCESS=false
 MODULE_FULLNAME=
@@ -78,10 +80,10 @@ done < "${AIM_REGISTRY}"
 shift
 
 if [[ $SUCCESS == true ]]; then
-	msg_info "Run: \"$MODULE_FULLNAME/build/$MODULE_NAME $@\" (includes all command-line arguments)"
+	msg_info "Run: \"$MODULE_FULLNAME/$BUILD_FOLDER/$MODULE_NAME $@\" (includes all command-line arguments)"
 	msg_info "The output of the module itself is in between two horizontal lines:"
 	echo "--------------------------------------------------------------------------------"
-	$MODULE_FULLNAME/build/$MODULE_NAME "$@"
+	$MODULE_FULLNAME/$BUILD_FOLDER/$MODULE_NAME "$@"
 	echo "--------------------------------------------------------------------------------"
 	msg_info "Exit of \"$MODULE_NAME\" (error code is not returned)"
 	exit 0

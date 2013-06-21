@@ -62,39 +62,44 @@ mkdir -p $RUR_REGISTRY_PATH
 
 MODULE_NAME=${1%/}
 
-echo "[#] Check ${MODULE_NAME} directory and default build location if there is a compiled binary"
+BUILD_FOLDER=builds/standard
+
+IDL_FOLDER=${MODULE_NAME}/aim-config
+
+msg_info "Check ${MODULE_NAME} directory and default build location if there is a compiled binary"
 if [ -e "${MODULE_NAME}" ]; then
 	if [ -e "${MODULE_NAME}/${BUILD_FOLDER}/${MODULE_NAME}" ]; then
-		echo "[#] Add \"${MODULE_NAME}\" to registry"
+		msg_info "Add \"${MODULE_NAME}\" to registry"
 	else
-		echo "[#] Cannot find \"${MODULE_NAME}/${BUILD_FOLDER}/${MODULE_NAME}\""
-		echo "[#] Make sure naming is consistent and the binary built properly"
+		msg_error "Cannot find \"${MODULE_NAME}/${BUILD_FOLDER}/${MODULE_NAME}\""
+		msg_error "Make sure naming is consistent and the binary built properly"
 		exit 0
 	fi
 else
-	echo "[#] Cannot find \"${MODULE_NAME}\""
+	msg_error "Cannot find \"${MODULE_NAME}\""
 	exit 0
 fi
 
 FULL_MODULE_NAME="$(readlink --canonicalize --no-newline $MODULE_NAME)"
-echo "[#] Full name to register: ${FULL_MODULE_NAME}"
+msg_info "Full name to register: ${FULL_MODULE_NAME}"
 
 echo "$MODULE_NAME = $FULL_MODULE_NAME" >> "${AIM_REGISTRY}"
 
 # Remove duplicate entries
-echo "[#] Remove duplicate entries from registry"
+msg_info "Remove duplicate entries from registry"
 uniq "${AIM_REGISTRY}" | tac > reversed.txt
 awk '!x[$1]++' FS=\= reversed.txt | tac > "${AIM_REGISTRY}"
 rm reversed.txt
 
 # Create registry directory with port names for each module
-echo "[#] Use rur-builder with specific backend \"extract\" to extract the ports from the idl file"
+msg_info "Use rur-builder with specific backend \"extract\" to extract the ports from the idl file"
 if [ ! -e "${RUR_BACKENDS_PATH}/extract.py" ]; then
-	echo "[#] Error: there is no extract backend in ${RUR_BACKENDS_PATH}. Did you install a recent version of the rur-builder?"
+	msg_error "There is no extract backend in ${RUR_BACKENDS_PATH}. Did you install a recent version of the rur-builder?"
 	exit 0
 fi
-omniidl -p${RUR_BACKENDS_PATH} -bextract ${MODULE_NAME}/aim/idl/${MODULE_NAME}.idl > "ports.txt"
+#rur-builder -b extract -i ${IDL_FOLDER}/${MODULE_NAME}.idl -p ${RUR_BACKENDS_PATH} -o "." -n "ports.txt"
+omniidl -p${RUR_BACKENDS_PATH} -brur_extract -Wbstandard -K "${IDL_FOLDER}/${MODULE_NAME}.idl" > "ports.txt"
 
-echo "[#] Write port definition to ${MODULE_NAME}.ports file in registry"
-mv ports.txt ${RUR_REGISTRY_PATH}/${MODULE_NAME}.ports
+msg_info "Write port definition to ${MODULE_NAME}.ports file in registry"
+cp ports.txt ${RUR_REGISTRY_PATH}/${MODULE_NAME}.ports
 
