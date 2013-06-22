@@ -57,3 +57,9 @@ aim_sanity() {
 	fi
 }
 
+# Copy something quietly if the source file or path does not exist.
+silent_cp() { 
+	cp $1 $2 2>/dev/null; 
+	return 0; 
+}
+

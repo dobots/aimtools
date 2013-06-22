@@ -119,6 +119,7 @@ apt-get install libyarp yarp-bin yarp-view
 ```
 
 ## Where can I read more?
+
 * [Wikipedia (YARP)](http://en.wikipedia.org/wiki/YARP)
 * [AIM website](http://dobots.github.com/aim-bzr/) 
 

@@ -2,40 +2,22 @@
 
 PROGRAM="aimupdate"
 
-VERSION="$PROGRAM 0.1"
+VERSION="0.2"
 
-####################################################################################################
+#######################################################################################################################
 # Default configuration
-####################################################################################################
+#######################################################################################################################
 
-# Installation paths
-RUR_BIN_PATH=/usr/bin
-RUR_SHARE_PATH=/usr/share/rur
-RUR_TEMPLATE_PATH=$RUR_SHARE_PATH/templates
-RUR_BACKENDS_PATH=$RUR_SHARE_PATH/backends
-RUR_CONFIG_PATH=/etc/rur
+AIM_CONFIG_PATH=/etc/aim
+AIM_CONFIG_FILE=/etc/aim/config.sh
 
-# Configuration files
-RUR_CONFIG_FILE_BACKENDS=${RUR_CONFIG_PATH}/backends.conf
-RUR_CONFIG_FILE_BACKENDS_CMAKE=${RUR_CONFIG_PATH}/backends.cmake
+source $AIM_CONFIG_FILE
+source $AIM_CONFIG_COLOR
+source $AIM_CONFIG_SANITY
 
-# Prepend with destination dir if DESTDIR is present
-RUR_SHARE_PATH="$DESTDIR/$RUR_SHARE_PATH"
-RUR_TEMPLATE_PATH="$DESTDIR/$RUR_TEMPLATE_PATH"
-RUR_BACKENDS_PATH="$DESTDIR/$RUR_BACKENDS_PATH"
-RUR_CONFIG_PATH="$DESTDIR/$RUR_CONFIG_PATH"
-
-####################################################################################################
-# User configuration
-####################################################################################################
-
-if [ -e ${RUR_CONFIG_FILE_BACKENDS} ]; then
-	source $RUR_CONFIG_FILE_BACKENDS
-fi
-
-####################################################################################################
-# Checks
-####################################################################################################
+#######################################################################################################################
+# Argument checks
+#######################################################################################################################
 
 if [[ "$1" == "" ]]
 then
@@ -45,7 +27,7 @@ fi
 
 if [[ "$1" == "-h" ]]
 then
-	echo $VERSION \- Usage
+	echo $PROGRAM $VERSION \- Usage
 	echo 
 	echo $PROGRAM \"ModuleName\"
 	echo
@@ -54,47 +36,55 @@ fi
 
 modulename="$1"
 
-# Check if there are no whitespaces
-mn_sanity_check=${modulename//[[:space:]]}
-
-if [[ "$mn_sanity_check" == "$1" ]]; then
-	if [[ "$1" == *Module ]]; then
-		echo "Update $1"
-	else
-		echo "Please, end the module with \"Module\""
-		exit 1
-	fi
-else
-	echo "Please, do not use whitespaces"
+aim_sanity $modulename error
+if [[ "$error" != 0 ]]; then
+	msg_error "Module name check failed."
 	exit 1
 fi
 
-####################################################################################################
+#######################################################################################################################
 # Start
-####################################################################################################
+#######################################################################################################################
+
+msg_info "Create tar ball $modulename.tar.gz as backup for \"$modulename/\""
+tar -czf "$modulename".tar.gz --exclude=.svn --exclude=builds/ "$modulename"
 
 cd "$modulename"
-
-echo "[#] Update build process files"
-cp $RUR_TEMPLATE_PATH/cmake/* aim/cmake
-cp $RUR_TEMPLATE_PATH/*.xml aim
-cp $RUR_TEMPLATE_PATH/*.cmake aim
-cp $RUR_TEMPLATE_PATH/CMakeLists.txt aim
-
-thispath=$(pwd)
-echo "[#] We do not update CMakeLists.txt because this might be adjusted by you"
-echo "[#]  to see do: diff $thispath/CMakeLists.txt $RUR_TEMPLATE_PATH/CMakeLists.txt.parent"
-read -p "[#] Do you want to see that now (y/N)? " lookatdiff
-if [ "${lookatdiff}" == "y" ]; then
-	cp $RUR_TEMPLATE_PATH/CMakeLists.txt.parent CMakeLists.txt.temp
-	sed -i "s/TemplateModule/$modulename/g" CMakeLists.txt.temp
-	diff --report-identical-files CMakeLists.txt.temp CMakeLists.txt
-	rm CMakeLists.txt.temp
+modulepath=$(pwd)
+msg_info "Ready to copy templates from \"$RUR_TEMPLATE_PATH/\" to \"$modulepath/\""
+msg_info "Previous files can be overwritten, but the copy is with an -i flag. So it will interactively ask you."
+read -p "Do you want to continue (y/N)? " user_continue
+if [ "${user_continue}" != "y" ]; then
+	msg_info "Aborted the updating process. You can always run $0 later"
+	exit 1
 fi
 
-cp $RUR_TEMPLATE_PATH/Makefile.parent ./Makefile
+cp -ir $RUR_TEMPLATE_PATH/* .
 
-# Replace "template module name" by real name
-echo "[#] In copied files replace TemplateModule by $modulename"
-sed -i "s/TemplateModule/$modulename/g" Makefile
+msg_info "Ready to recursively replace in \"$modulepath\" all default TemplateModule strings with $modulename."
+read -p "Do you want to continue (y/N)? " user_continue
+if [ "${user_continue}" != "y" ]; then
+	msg_info "Aborted the updating process. You can always run $0 later"
+	exit
+fi
+msg_debug "Using -print0 and xargs -0 between find and sed. If this does not work on BSD / Mac OS, tell us."
+find . -not -iwholename '*.svn' -not -iwholename '/builds' -type f -print0 | xargs -0 sed -i -e "s/TemplateModule/$modulename/g"
+
+msg_info "Copy the idl file from previous location to a new one"
+silent_cp aim/idl/*.idl aim-config/
+
+msg_info "Rename all files with TemplateModule in their name, you probably do not want to replace your already \
+existing files with them. To help you decide we first show a diff "
+for file in $(find . -not -iwholename '*.svn' -type f -name TemplateModule*); do
+	diff -U 10 -s $file ${file/TemplateModule/$modulename}
+	mv -i $file ${file/TemplateModule/$modulename}
+	rm -f $file
+done
+
+msg_info "Create masks for build directories in a .gitignore file"
+echo "builds/" >> .gitignore
+echo "aim-devel/" >> .gitignore
+
+
+msg_info "You can remove the aim/ directory and the build/ directory from the previous AIM version"
 

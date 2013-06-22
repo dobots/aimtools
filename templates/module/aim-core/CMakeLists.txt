@@ -123,10 +123,11 @@ IF (RUR_BUILDER)
 	EXECUTE_PROCESS(COMMAND rur-builder -i ${IDL_FILE} -b ${MIDDLEWARE} -p ${BACKENDS_PATH} -o ${OUT_PATH} -n ${OUT_NAME} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} RESULT_VARIABLE RUR_RESULT )
 
 	IF (NOT "${RUR_RESULT}" STREQUAL "0")
-		MESSAGE(FATAL_ERROR "The rur-builder did not run correctly! ${RUR_RESULT}\n"
-			"The rur-builder did probably run, so it might be an error in this specific backend for ${MIDDLEWARE}"
-			"Please, submit an issue at https://github.com/dobots/aimtools"
-			"And, if you don't mind, attach the output of aimdebug to that issue")
+		MESSAGE(FATAL_ERROR "The rur-builder did not run correctly! ${RUR_RESULT}\n "
+			"The rur-builder did probably run, so it might be an error in this specific backend for ${MIDDLEWARE}. "
+			"Please, submit an issue at https://github.com/dobots/aimtools. "
+			"And, if you don't mind, attach the output of aimdebug to that issue. "
+			"Usage: aimdebug ${PROJECT_NAME}. ")
 	ENDIF ()
 
 ENDIF ()
