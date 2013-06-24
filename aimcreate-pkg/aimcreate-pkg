@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Author: Anne C. van Rossum
-# License: GNU LGPLv3 
+# License: GNU LGPLv3
 # Date: Jun. 17, 2012
 
 PROGRAM="aimcreate-pkg"
@@ -91,7 +91,7 @@ msg_info "Adapt template files to use $modulename (recursive sed operation)"
 # Not using -print0, since that is GNU only. Filenames should not contain any blanks!
 find . -not -iwholename '*.svn' -type f | xargs sed -i -e "s/TemplateModule/$modulename/g"
 
-for F in $(find . -type f -name TemplateModule*); do
+for F in $(find . -type f -name 'TemplateModule*'); do
 	mv $F ${F/TemplateModule/$modulename}
 done
 
