@@ -18,6 +18,7 @@ all:
 install: | $(targetdir)
 	@echo install $(program) $(targetdir)
 	@install $(program) $(targetdir)
+	mkdir -p $(aim_crosscompileconf_path)
 	@echo cp conf/* $(aim_crosscompileconf_path)
 	@cp conf/* $(aim_crosscompileconf_path)
 
