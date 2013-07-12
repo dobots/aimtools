@@ -135,7 +135,7 @@ check_errors() {
 	else
 		msg_info "                          \\o/ "
 		msg_info "There are no errors found  |  "
-		msg_info "                          /'\\ "
+		msg_info "                          / \\ "
 	fi
 }
  
