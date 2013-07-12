@@ -59,8 +59,6 @@ fi
 MODULE_NAME=${1%/}
 ModuleId=${2%/}
 
-BUILD_FOLDER=builds/standard
-
 msg_info "Search in ${AIM_REGISTRY}"
 SUCCESS=false
 MODULE_FULLNAME=
@@ -75,6 +73,13 @@ while read LINE; do
 		break
 	fi
 done < "${AIM_REGISTRY}"
+
+target=host
+source ${MODULE_FULLNAME}/aim-core/middleware_default.aim
+source ${MODULE_FULLNAME}/aim-devel/middleware_local.aim
+msg_info "Running for middleware \"$middleware\" and platform \"$target\""
+
+BUILD_FOLDER=builds/${middleware}
 
 # Shift so, $@ becomes second argument (id) and further on
 shift

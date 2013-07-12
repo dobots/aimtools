@@ -151,19 +151,24 @@ IF (${MIDDLEWARE} STREQUAL "ros")
 		MESSAGE(FATAL_ERROR "Requires env. variable $ROS_ROOT. Run for example: \"source /opt/ros/groovy/setup.bash\".")
 	ENDIF()
 	MESSAGE(STATUS "ROS build, useful for ROS middleware")
-	include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
-	# http://www.ros.org/wiki/rosbuild/CMakeLists#rosbuild_init
-	rosbuild_init()
+	
+	find_package(catkin REQUIRED COMPONENTS roscpp message_generation std_msgs)
 
-	SET(INCLUDE_DIRS ${${PROJECT_NAME}_INCLUDE_DIRS})
-	SET(INCLUDE_DIRS "$ENV{ROS_ROOT}/../../include")
+	add_message_files(DIRECTORY ../aim-config/ros/msg)
+	
+	generate_messages(DEPENDENCIES std_msgs)
+	
+#	catkin_package(CATKIN_DEPENDS message_runtime std_msgs)
+	
+#	ADD_DEPENDENCIES(${PROJECT_NAME} ${PROJECT_NAME}_gencpp)
+	
+	SET(INCLUDE_DIRS ${catkin_INCLUDE_DIRS})
+	MESSAGE(STATUS "catkin includes: ${catkin_INCLUDE_DIRS}")
+	SET(INCLUDE_DIRS "${INCLUDE_DIRS};${CATKIN_DEVEL_PREFIX}/include")
+	MESSAGE(STATUS "catkin includes: ${CATKIN_DEVEL_PREFIX}/include")
 
-	SET(LIBS ${LIBS} ${${PROJECT_NAME}_LIBRARIES})
-	MESSAGE(STATUS "Libraries according to rosbuild_init: ${${PROJECT_NAME}_LIBRARIES}")
-	MESSAGE(STATUS "Warning. Because these seem to be empty we will hardcode references to the libraries!")
-	SET(LIBS ${LIBS} "$ENV{ROS_ROOT}/../../lib/libroscpp.so")
-	SET(LIBS ${LIBS} "$ENV{ROS_ROOT}/../../lib/librosconsole.so")
-	SET(LIBS ${LIBS} "$ENV{ROS_ROOT}/../../lib/libroscpp_serialization.so")
+	SET(LIBS ${LIBS} ${catkin_LIBRARIES})
+	MESSAGE(STATUS "catkin libs: ${catkin_LIBRARIES}")
 
 	SET(PARENT_INCLUDE_DIRS ${INCLUDE_DIRS} PARENT_SCOPE)
 ENDIF()
