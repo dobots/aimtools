@@ -152,6 +152,8 @@ IF (${MIDDLEWARE} STREQUAL "ros")
 	ENDIF()
 	MESSAGE(STATUS "ROS build, useful for ROS middleware")
 	
+	# See http://www.ros.org/wiki/catkin/CMakeLists.txt
+	
 	find_package(catkin REQUIRED COMPONENTS roscpp message_generation std_msgs)
 
 	add_message_files(DIRECTORY ../aim-config/ros/msg)
