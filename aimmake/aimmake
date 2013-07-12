@@ -15,6 +15,7 @@ VERSION="0.2"
 AIM_CONFIG_PATH=/etc/aim
 AIM_CONFIG_FILE=/etc/aim/config.sh
 
+echo -e "[#] $(date +"%x %R") - Info: Source config files"
 source $AIM_CONFIG_FILE
 source $AIM_CONFIG_COLOR
 source $AIM_CONFIG_SANITY
@@ -74,17 +75,17 @@ target=host
 source aim-core/middleware_default.aim
 source aim-devel/middleware_local.aim
 
-msg_info "Set installation dir and get color config"
-source /etc/apt-cross/ac-build/ac_get.sh
+#msg_info "Set installation dir and get color config"
+#source /etc/apt-cross/ac-build/ac_get.sh
 
 #msg_info "Get platform specific compiler"
 #source /etc/apt-cross/ac-platform/$target.sh
 
-#######################################################################################################################
-# Requires cmake build system
-#######################################################################################################################
-
 LOG_FILE=make.log
+
+#######################################################################################################################
+# Function definition
+#######################################################################################################################
  
 # Sets "CORES" and "AVAILABLE_CORES"
 set_cores() {
@@ -212,7 +213,14 @@ build_nodejs() {
 	rsync -avzul build/ ../../builds/nodejs
 }
 
-msg_info "Build for middleware $middleware and platform $target"
+#######################################################################################################################
+# Program execution
+#######################################################################################################################
+
+msg_info "Build for middleware \"$middleware\" and platform \"$target\""
+if [ $middleware == "ros" ]; then
+	export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:${PWD}
+fi
 if [ $middleware == "nodejs" ]; then
 	build_nodejs
 else
