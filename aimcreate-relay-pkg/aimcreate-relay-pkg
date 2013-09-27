@@ -1,0 +1,112 @@
+#!/bin/bash
+
+# Author: Anne C. van Rossum
+# Edited: Alex de Mulder
+# License: GNU LGPLv3
+# Date: Jun. 17, 2012 (edited 26-9-2013)
+
+PROGRAM="aimcreate-relay-pkg"
+
+VERSION="0.2"
+
+#######################################################################################################################
+# Default configuration
+#######################################################################################################################
+
+AIM_CONFIG_PATH=/etc/aim
+AIM_CONFIG_FILE=/etc/aim/config.sh
+
+source $AIM_CONFIG_FILE
+source $AIM_CONFIG_COLOR
+source $AIM_CONFIG_SANITY
+
+#######################################################################################################################
+# User configuration
+#######################################################################################################################
+
+if [ -e ${RUR_CONFIG_FILE_BACKENDS} ]; then
+	source $RUR_CONFIG_FILE_BACKENDS
+fi
+
+#######################################################################################################################
+# Argument checks
+#######################################################################################################################
+
+if [[ "$1" == "" ]]
+then
+	msg_error "No args supplied! Run $0 -h for more info"
+	exit 1
+fi
+
+if [[ "$1" == "-h" ]]
+then
+	echo $PROGRAM $VERSION \- Usage
+	echo
+	echo "$PROGRAM \"ModuleName\" "
+	echo "$PROGRAM \"ModuleName\" -b [STANDARD|YARP|ROS|ZEROMQ|NODEJS]"
+	echo
+	exit 0
+fi
+
+backend=
+if [[ "$2" == "-b" ]]
+then
+	backend=$3
+fi
+
+####################################################################################################
+# Specific checks
+####################################################################################################
+
+modulename="$1"
+
+aim_sanity $modulename error
+if [[ "$error" != 0 ]]; then
+	msg_error "Module name check failed, there are many reasons to construct a specific name of the form \"*Module\". The main reason here is to allow easy checks on execution on a server. Although the modules created by aimcreate-pkg should run in for example a Linux Container, remote execution of modules is key to many applications. Hence, it is nice to be able to perform some basic checking if there are no system utilities called by third parties. Although only binaries should be called that are registered by aim-registry a specific naming convention allows for an additional sanity check."
+	exit 1
+fi
+
+####################################################################################################
+# Start
+####################################################################################################
+
+# Checks
+if [ -e $modulename ]; then
+	msg_error "\"${modulename}\" already exists!"
+	exit 1
+fi
+
+# Create the proper directory
+msg_info "Create the directory $modulename"
+mkdir -p "$modulename"
+cd "$modulename"
+modulepath=$(pwd)
+msg_info "Copy from templates from \"$RUR_TEMPLATE_PATH/\" to \"$modulepath/\""
+cp -ir $RUR_TEMPLATE_PATH/* .
+
+msg_info "Create masks for build directories in a .gitignore file"
+echo "builds/" >> .gitignore
+echo "aim-devel/" >> .gitignore
+
+msg_info "Adapt template files to use $modulename (recursive sed operation)"
+# Not using -print0, since that is GNU only. Filenames should not contain any blanks!
+find . -not -iwholename '*.svn' -type f | xargs sed -i -e "s/TemplateModule/$modulename/g"
+
+for F in $(find . -type f -name 'TemplateModule*'); do
+	mv $F ${F/TemplateModule/$modulename}
+done
+
+if [ -n "$backend" ]; then
+	msg_info "We will use backend: $backend, feel free to use other ones later on!"
+	sed -i "s/set(BUILD_STANDARD on)/set(BUILD\_$backend on)/g" aim-core/default.cmake
+fi
+
+python -c "path = \"$modulepath/src/$modulename\" + \"Ext.cpp\"; print path; a = open(path,'r'); content = a.read(); a.close(); content = content.replace(\"//! Replace with your own functionality\",''); content = content.replace(\"void \" + \"$modulename\" + \"Ext::Tick() {\",\"//! FILE WILL BE GENERATED. ALTERATIONS ARE IRRELEVANT \nvoid \" + \"$modulename\" + \"Ext::Tick() {\n\t//CODE__INSERTED__HERE\"); a = open(path,'w'); a.write(content); a.close(); print \"Succesfully Altered Template comments!\";"
+
+touch $modulepath"/aim-core/.relay"
+
+msg_info "Added Relay indicator"
+
+msg_info "Done!"
+msg_info "Type \"aimmake ${modulename}\" and you are good to go!"
+msg_info "Optionally: change middleware by \"aimselect ${modulename} nodejs\""
