@@ -101,7 +101,7 @@ if [ -n "$backend" ]; then
 	sed -i "s/set(BUILD_STANDARD on)/set(BUILD\_$backend on)/g" aim-core/default.cmake
 fi
 
-python -c "path = \"$modulepath/src/$modulename\" + \"Ext.cpp\"; print path; a = open(path,'r'); content = a.read(); a.close(); content = content.replace(\"//! Replace with your own functionality\",''); content = content.replace(\"void \" + \"$modulename\" + \"Ext::Tick() {\",\"//! FILE WILL BE GENERATED. ALTERATIONS ARE IRRELEVANT \nvoid \" + \"$modulename\" + \"Ext::Tick() {\n\t//CODE__INSERTED__HERE\"); a = open(path,'w'); a.write(content); a.close(); print \"Succesfully Altered Template comments!\";"
+python -c "path = \"$modulepath/src/$modulename\" + \"Ext.cpp\"; print path; a = open(path,'r'); content = a.read(); a.close(); content = content.replace(\"//! Replace with your own functionality\",''); content = content.replace(\"void \" + \"$modulename\" + \"Ext::Tick() {\",\"//! FILE WILL BE GENERATED. ALTERATIONS ARE IRRELEVANT \nvoid \" + \"$modulename\" + \"Ext::Tick() {\"); a = open(path,'w'); a.write(content); a.close(); print \"Succesfully Altered Template comments!\";"
 
 touch $modulepath"/aim-core/.relay"
 
