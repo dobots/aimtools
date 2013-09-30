@@ -3,6 +3,7 @@
 #######################################################################################################################
 
 # Author: A.C. van Rossum
+# Edited: Alex de Mulder
 # Date: Jun. 17, 2013
 # License: LGPL v.3
 # Company: Distributed Organisms B.V.
@@ -13,7 +14,7 @@
 #######################################################################################################################
 
 # Compile everything, but start with "helper" and "template"
-SUBDIRS=helper templates aimconnect aimcopy aimcreate-pkg aimcross aimdebug aimget aiminit aimlist aimlogin aimmake \
+SUBDIRS=helper templates aimconnect aimcopy aimcreate-pkg aimcreate-relay-pkg aimcross aimdebug aimget aiminit aimlist aimlogin aimmake \
 	 aimports aimregister aimrun aimselect aimstop aimupdate
 
 #######################################################################################################################
