@@ -119,23 +119,21 @@ SET(OUT_PATH "${CMAKE_SOURCE_DIR}/aim-core")
 FIND_PROGRAM(RUR_BUILDER rur-builder)
 
 IF (RUR_BUILDER)
-	MESSAGE(STATUS "Run the rur-builder with arguments: \"-i ${IDL_FILE} -b ${MIDDLEWARE} -p ${BACKENDS_PATH} -o ${OUT_PATH} -n ${OUT_NAME} \"")
-
 	file(MAKE_DIRECTORY "${OUT_PATH}/src")
 	file(MAKE_DIRECTORY "${OUT_PATH}/inc")
-	#EXECUTE_PROCESS(COMMAND rur-builder -i ${IDL_FILE} -b ${MIDDLEWARE} -p ${BACKENDS_PATH} -o ${OUT_PATH} -n ${OUT_NAME} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} RESULT_VARIABLE RUR_RESULT )
-	
-	
-	MESSAGE (STATUS "THIS IS THE VARIABLE!!! ::: ${RUR_SHARE_PATH}")
-	IF(EXISTS "${OUT_PATH}/.relay")
-		MESSAGE(STATUS "the file exists")
-		EXECUTE_PROCESS(COMMAND rur-builder -i ${IDL_FILE} -p ${BACKENDS_PATH} -o "${CMAKE_SOURCE_DIR}/src/${OUT_NAME}Ext.cpp" -b "rur_main_relay" -m ${MIDDLEWARE} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} RESULT_VARIABLE RUR_RESULT )
-	ENDIF()
-	
-	EXECUTE_PROCESS(COMMAND rur-builder -i ${IDL_FILE} -p ${BACKENDS_PATH} -o "${OUT_PATH}/src/${OUT_NAME}.cpp"  -b "rur_main_impl" -m ${MIDDLEWARE} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} RESULT_VARIABLE RUR_RESULT )
+
+	MESSAGE(STATUS "Run the rur-builder with arguments: -i ${IDL_FILE} -p ${BACKENDS_PATH} -o \"${OUT_PATH}/inc/${OUT_NAME}.h\" -b \"rur_main_head\" -m ${MIDDLEWARE}")
 	EXECUTE_PROCESS(COMMAND rur-builder -i ${IDL_FILE} -p ${BACKENDS_PATH} -o "${OUT_PATH}/inc/${OUT_NAME}.h" -b "rur_main_head" -m ${MIDDLEWARE} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} RESULT_VARIABLE RUR_RESULT )
 	
-	
+	MESSAGE(STATUS "Run the rur-builder with arguments: -i ${IDL_FILE} -p ${BACKENDS_PATH} -o \"${OUT_PATH}/src/${OUT_NAME}.cpp\"  -b \"rur_main_impl\" -m ${MIDDLEWARE}")
+	EXECUTE_PROCESS(COMMAND rur-builder -i ${IDL_FILE} -p ${BACKENDS_PATH} -o "${OUT_PATH}/src/${OUT_NAME}.cpp"  -b "rur_main_impl" -m ${MIDDLEWARE} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} RESULT_VARIABLE RUR_RESULT )
+
+	IF(EXISTS "${OUT_PATH}/.relay")
+		MESSAGE(STATUS "Run the rur-builder with arguments: -i ${IDL_FILE} -p ${BACKENDS_PATH} -o \"${CMAKE_SOURCE_DIR}/src/${OUT_NAME}Ext.cpp\" -b \"rur_main_relay\" -m ${MIDDLEWARE}")
+		EXECUTE_PROCESS(COMMAND rur-builder -i ${IDL_FILE} -p ${BACKENDS_PATH} -o "${CMAKE_SOURCE_DIR}/src/${OUT_NAME}Ext.cpp" -b "rur_main_relay" -m ${MIDDLEWARE} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} RESULT_VARIABLE RUR_RESULT )
+	ENDIF()	
+
+# TODO: should be checked 3 times
 	IF (NOT "${RUR_RESULT}" STREQUAL "0")
 		MESSAGE(FATAL_ERROR "The rur-builder did not run correctly! ${RUR_RESULT}\n "
 			"The rur-builder did probably run, so it might be an error in this specific backend for ${MIDDLEWARE}. "
