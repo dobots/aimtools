@@ -133,7 +133,9 @@ check_errors() {
 		chmod a+x ${ERROR_SCRIPT}
 		msg_error "There are errors!"
 	else
-		msg_info "There are no errors found"
+		msg_info "                          \\o/ "
+		msg_info "There are no errors found  |  "
+		msg_info "                          / \\ "
 	fi
 }
  
