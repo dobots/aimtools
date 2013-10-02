@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# Author: Anne C. van Rossum
+# License: GNU LGPLv3 
+# Date: Oct. 02, 2013
+
+PROGRAM="aimbrowse"
+
+VERSION="0.2"
+
+#######################################################################################################################
+# Default configuration
+#######################################################################################################################
+
+AIM_CONFIG_PATH=/etc/aim
+AIM_CONFIG_FILE=/etc/aim/config.sh
+
+source $AIM_CONFIG_FILE
+source $AIM_CONFIG_COLOR
+source $AIM_CONFIG_SANITY
+
+if [[ "$1" == "-h" ]]
+then
+	echo "$PROGRAM $VERSION - Usage"
+	echo 
+	echo "$PROGRAM"
+	echo "  no arguments required"
+	echo
+	echo "Dependency: curl"
+	exit 0 
+fi 
+
+#######################################################################################################################
+# Implementation
+#######################################################################################################################
+
+text=$(curl -s https://github.com/search\?q\=aim-config+in%3Apath+config.aim\&type\=Code | grep config.aim | grep title | grep href)
+
+repos_txt=$(echo "$text" | cut -f2 -d'=' | cut -f2 -d'/')
+
+file_txt=$(echo "$text" | cut -f3 -d'=' | cut -f2 -d'"')
+
+module_txt=$(echo "$file_txt" | cut -f1 -d'/')
+
+IFS=$'\n' read -d '' -r -a repos <<< "$repos_txt"
+IFS=$'\n' read -d '' -r -a module <<< "$module_txt"
+
+nof_repos=${#repos[@]}
+nof_modules=${#module[@]}
+
+if [ "$nof_repos" -ne "$nof_modules" ] ; then
+	msg_warning "The number of elements $nof_elements and modules $nof_modules is different. Exit."
+	exit
+else
+	msg_info "There are $nof_modules modules that could be found online."
+fi
+
+for (( i=0; i<$nof_modules; i++ )); do
+	msg_info "Repository \"${repos[$i]}\" contains module \"${module[$i]}\""
+done

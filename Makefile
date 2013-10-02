@@ -13,9 +13,9 @@
 
 #######################################################################################################################
 
-# Compile everything, but start with "helper" and "template"
-SUBDIRS=helper templates aimconnect aimcopy aimcreate-pkg aimcreate-relay-pkg aimcross aimdebug aimget aiminit aimlist aimlogin aimmake \
-	 aimports aimregister aimrun aimselect aimstop aimupdate
+# Compile everything, but start with "helper" and "template", keep the rest in alphabetic order
+SUBDIRS=helper templates aimbrowse aimconnect aimcopy aimcreate-pkg aimcreate-relay-pkg aimcross aimdebug aimget \
+	aiminit aimlist aimlogin aimmake aimports aimregister aimrun aimselect aimstop aimupdate
 
 #######################################################################################################################
 

@@ -47,6 +47,8 @@ then
 	echo
 	echo "Set AIM_WORKSPACE as environmental variable before you use this tool"
 	echo "  for example: export AIM_WORKSPACE=$HOME/aim_workspace"
+	echo
+	echo "Dependency: git"
 	exit 0 
 fi 
 
