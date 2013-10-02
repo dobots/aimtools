@@ -32,6 +32,7 @@ RUR_TEMPLATE_PATH="$DESTDIR/$RUR_TEMPLATE_PATH"
 RUR_BACKENDS_PATH="$DESTDIR/$RUR_BACKENDS_PATH"
 RUR_CONFIG_PATH="$DESTDIR/$RUR_CONFIG_PATH"
 
+#msg_init $PROGRAM
 
 ####################################################################################################
 # User configuration
