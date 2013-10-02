@@ -2,7 +2,7 @@
 
 PROGRAM="aimupdate"
 
-VERSION="0.2"
+VERSION="0.3"
 
 #######################################################################################################################
 # Default configuration
@@ -59,6 +59,7 @@ if [ "${user_continue}" != "y" ]; then
 	exit 1
 fi
 
+# TODO: if files are the same: do not copy
 cp -ir $RUR_TEMPLATE_PATH/* .
 
 msg_info "Ready to recursively replace in \"$modulepath\" all default TemplateModule strings with $modulename."
