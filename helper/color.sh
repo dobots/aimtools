@@ -26,19 +26,67 @@ colors() {
 
 colors
 
+msg_hello() {
+                                          
+echo -e ${BlueF}                                         
+echo "                                         iYi              "
+echo "                                       ti+==+i            "
+echo "                                      It+====it           "
+echo "                                     IIti===+iII          "
+echo "                               =:    IIIti++itII          "
+echo "                               +t    XIIIttttIII          "
+echo "                               +     tRRIRiRIIRR     #    "
+echo "                              t      t+=:V+:X;+i     +    "
+echo "                              ;      t+=:.B.:;+i     =    "
+echo "                        Itii+ ;       +;:. ,:;+   ti=R+   "
+echo "                      Itti+++RR+       ;:. ,:=   It+===i  "
+echo "                    IItti++====++i              IIIi+=+tY "
+echo "                   IIItti+======++i             YIIttitII "
+echo "                  IIIItii+=======+it  t=t       iRIIRIIII "
+echo "                 IIIIItii+=======+it RI++  ;    i=:iRRRRY "
+echo "                 IIIIItti+======++itI =    +    i=:.B:;+# "
+echo "                RVIIIItti++====++ittI            ;: .:=i  "
+echo "                tRIIIIItti++++++iitII       ;       .:    "
+echo "                ttRYIIIIttiiiiiiittIII      + i+          "
+echo "                tiiRRIIIItttiittttIIII     tR+===++       "
+echo "                ti+=RRRIRRRRttttIIIIII   IIti+====+i      "
+echo "                ti+=;iRRt iRRIIIIIIIII  YIIt+=====+it     "
+echo "                ii+=;::R=RRR+IIIIIIIR   IIIti+====+itI    "
+echo "                t++=;:,.RRR.RRRRRRRRX  IIIIti++==++itI    "
+echo "                 +=;;:,.RRRR,:;;=+iit  IIIIIti+++iitIYR   "
+echo "                 +=;;:,.  .,::;==+ii   IIIIIIttiittIXRt   "
+echo "                  =;:,,.  .,:;;=++it   IIIIIIIRRRIIRR+i   "
+echo "                   ;:,..  .,:;;=+ii    IIIIIIYRR=RR;=+i   "
+echo "                  ..:,.  .,,:;==+      RRRYVXRR+.R:;=+i   "
+echo "                  .,:;.  .,::;==.      ttiVVi,RRR,:;=+    "
+echo "                  .,,:;==:,:;:,..       ti+=;:,  .,:;=    "
+echo "                   .,,::;;;::,..         i+=;:,. .,:;     "
+echo "                    ...,,,,,..            +=;:,. .,:.     "
+echo "                                           +=;:.  ,,.     "
+echo "                                           .,::;;:,.      "
+echo "                                            ..,,,..       "
+echo -e ${Reset}
+}
+                                          
+msg_prefix="#"
+msg_init() {
+	msg_prefix=$1
+	msg_hello
+}
+
 msg_error() {
-	echo -e ${RedF}"[#] $(date +"%x %R") - Error: $1"${Reset}
+	echo -e ${RedF}"[$msg_prefix] $(date +"%x %R") - Error: $1"${Reset}
 }
 
 msg_warning() {
-	echo -e ${YellowF}"[#] $(date +"%x %R") - Warning: $1"${Reset}
+	echo -e ${YellowF}"[$msg_prefix] $(date +"%x %R") - Warning: $1"${Reset}
 }
 
 msg_info() {
-	echo -e ${GreenF}"[#] $(date +"%x %R") - Info: $1"${Reset}
+	echo -e ${GreenF}"[$msg_prefix] $(date +"%x %R") - Info: $1"${Reset}
 }
 
 msg_debug() {
-	echo -e ${BlueF}"[#] $(date +"%x %R") - Debug: $1"${Reset}
+	echo -e ${BlueF}"[$msg_prefix] $(date +"%x %R") - Debug: $1"${Reset}
 }
 
