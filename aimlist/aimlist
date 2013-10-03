@@ -2,35 +2,20 @@
 
 PROGRAM="aimlist"
 
-VERSION="$PROGRAM 0.1"
+VERSION="0.3"
 
-####################################################################################################
+#######################################################################################################################
 # Default configuration
-####################################################################################################
+#######################################################################################################################
 
-# Installation paths
-RUR_BIN_PATH=/usr/bin
-RUR_SHARE_PATH=/usr/share/rur
-RUR_TEMPLATE_PATH=$RUR_SHARE_PATH/templates
-RUR_BACKENDS_PATH=$RUR_SHARE_PATH/backends
-RUR_CONFIG_PATH=/etc/rur
+AIM_CONFIG_PATH=/etc/aim
+AIM_CONFIG_FILE=/etc/aim/config.sh
 
-# Working paths
-RUR_DATA_PATH=$HOME/.rur/data
-RUR_REGISTRY_PATH=$RUR_DATA_PATH/registry
+source $AIM_CONFIG_FILE
+source $AIM_CONFIG_COLOR
+source $AIM_CONFIG_SANITY
 
-# Configuration files
-RUR_CONFIG_FILE_BACKENDS=${RUR_CONFIG_PATH}/backends.conf
-RUR_CONFIG_FILE_BACKENDS_CMAKE=${RUR_CONFIG_PATH}/backends.cmake
-
-# Data(base) files
-AIM_REGISTRY=${RUR_DATA_PATH}/aim_registry.txt
-
-# Prepend with destination dir if DESTDIR is present
-RUR_SHARE_PATH="$DESTDIR/$RUR_SHARE_PATH"
-RUR_TEMPLATE_PATH="$DESTDIR/$RUR_TEMPLATE_PATH"
-RUR_BACKENDS_PATH="$DESTDIR/$RUR_BACKENDS_PATH"
-RUR_CONFIG_PATH="$DESTDIR/$RUR_CONFIG_PATH"
+msg_init $PROGRAM
 
 
 ####################################################################################################
@@ -45,9 +30,14 @@ fi
 # Checks
 ####################################################################################################
 
+if [[ $AIM_VERSION != $VERSION ]]; then
+	msg_error "${PROGRAM} is version ${VERSION}, while it should be version ${AIM_VERSION}."
+	exit 0
+fi
+
 if [[ "$1" == "-h" ]]
 then
-	echo $VERSION \- Usage
+	echo $PROGRAM $VERSION \- Usage
 	echo 
 	echo "$PROGRAM mode"
 	echo "  mode=0 means to list all CS* modules"
@@ -56,7 +46,7 @@ then
 	exit 0 
 elif [ $# -ne 1 ]
 then
-	echo "[#] One and only one argument is expected!"
+	msg_error "One and only one argument is expected!"
 	exit 1
 fi 
 
@@ -67,25 +57,24 @@ index=0
 while read LINE; 
 do
 	MODULE_I=`echo "$LINE" | cut -d'=' -f 1 | sed 's/ *$//g'`
-        MODULE_I=${MODULE_I%/}
-        FirstTwo=`echo "$MODULE_I" | cut -c1-2`
-        MiddleFive=`echo "$MODULE_I" | cut -c3-7`
-        if [ "$1" -eq 0 ]; then
-          if [[ "$FirstTwo" != "CS" ]]; then 
-             Registered_Module[$index]=$MODULE_I
-             # echo $index
-	     index=$(($index + 1))
-          fi
-        elif [ "$1" -eq 1 ]; then
-          if [[ "$MiddleFive" != "Login" ]]
-          then
-          	Registered_Module[$index]=$MODULE_I
-          	index=$(($index + 1))
-          fi
-        else
-          echo "[#] Only two modes (0 and 1) are expected, please check!"
-	  exit 1
-        fi
+	MODULE_I=${MODULE_I%/}
+	FirstTwo=`echo "$MODULE_I" | cut -c1-2`
+	MiddleFive=`echo "$MODULE_I" | cut -c3-7`
+	if [ "$1" -eq 0 ]; then
+		if [[ "$FirstTwo" != "CS" ]]; then 
+			Registered_Module[$index]=$MODULE_I
+			# echo $index
+			index=$(($index + 1))
+		fi
+	elif [ "$1" -eq 1 ]; then
+		if [[ "$MiddleFive" != "Login" ]]; then
+			Registered_Module[$index]=$MODULE_I
+			index=$(($index + 1))
+		fi
+	else
+		msg_error "Only two modes (0 and 1) are expected, please check!"
+		exit 1
+	fi
 
 #	echo $LINE
 #	echo $M_I_STRIPPED
@@ -100,13 +89,13 @@ echo "{"
 echo "  \"modules\": ["
 for (( i=0; i<${tLen}; i++ ));
 do
-  echo "    {"
-  echo "      \"name\": \"${Registered_Module[$i]}\""
-  if [ $i -eq $((${tLen} - 1)) ]; then
-    echo "    }"
-  else
-    echo "    },"
-  fi
+	echo "    {"
+	echo "      \"name\": \"${Registered_Module[$i]}\""
+	if [ $i -eq $((${tLen} - 1)) ]; then
+		echo "    }"
+	else
+		echo "    },"
+	fi
 done
 echo "  ] "
 echo "}"

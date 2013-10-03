@@ -2,7 +2,7 @@
 
 PROGRAM="aimupdate"
 
-VERSION="0.2"
+VERSION="0.3"
 
 #######################################################################################################################
 # Default configuration
@@ -20,6 +20,11 @@ msg_init $PROGRAM
 #######################################################################################################################
 # Argument checks
 #######################################################################################################################
+
+if [[ $AIM_VERSION != $VERSION ]]; then
+	msg_error "${PROGRAM} is version ${VERSION}, while it should be version ${AIM_VERSION}."
+	exit 0
+fi
 
 if [[ "$1" == "" ]]
 then
@@ -61,7 +66,8 @@ if [ "${user_continue}" != "y" ]; then
 	exit 1
 fi
 
-cp -ir $RUR_TEMPLATE_PATH/* .
+# TODO: if files are the same: do not copy
+cp -uir $RUR_TEMPLATE_PATH/* .
 
 msg_info "Ready to recursively replace in \"$modulepath\" all default TemplateModule strings with $modulename."
 read -p "Do you want to continue (y/N)? " user_continue

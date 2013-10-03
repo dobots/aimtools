@@ -6,7 +6,7 @@
 
 PROGRAM="aimmake"
 
-VERSION="0.2"
+VERSION="0.3"
 
 #######################################################################################################################
 # Default configuration
@@ -37,6 +37,11 @@ fi
 #######################################################################################################################
 # Argument checks
 #######################################################################################################################
+
+if [[ $AIM_VERSION != $VERSION ]]; then
+	msg_error "${PROGRAM} is version ${VERSION}, while it should be version ${AIM_VERSION}."
+	exit 0
+fi
 
 if [[ "$1" == "" ]]
 then
@@ -92,7 +97,7 @@ LOG_FILE=make.log
 #######################################################################################################################
 # Function definition
 #######################################################################################################################
- 
+
 # Sets "CORES" and "AVAILABLE_CORES"
 set_cores() {
 	CORES=1
@@ -100,14 +105,14 @@ set_cores() {
 	msg_info "We will compile on ${CORES} of a total of ${AVAILABLE_CORES} cores"
 	msg_info "Note that Unity/Ubuntu grinds to a halt if this reaches the total number of cores available)"
 }
- 
+
 set_verbosity() {
 	MAKE_VERBOSITY="VERBOSE=1"
 	MAKE_VERBOSITY=
 }
- 
+
 set_timing() {
-        MAKE_TIMING=time
+	MAKE_TIMING=time
 }
  
 # Create log file and write everything to it
@@ -146,28 +151,28 @@ check_errors() {
 }
  
 check_warnings() {
-        msg_debug "Check for warnings"
-        WARNINGS=`cat ${LOG_FILE} | grep "warning"`
-        WARNING_SCRIPT=../check_warning.sh
-        rm -f ${WARNING_SCRIPT}
-        if [ -n "$WARNINGS" ]; then
-                WARNING_FILE=`cat ${LOG_FILE} | grep "warning" | cut -d':' -f1`
-                WARNING_LINE=`cat ${LOG_FILE} | grep "warning" | cut -d':' -f2`
-                echo "gedit ${WARNING_FILE} +${WARNING_LINE}" >> ${WARNING_SCRIPT}
-                chmod a+x ${WARNING_SCRIPT}
-                msg_error "There are warnings! Run ./check_warning.sh"
-        else
-                msg_info "There are no warnings found"
-        fi
+	msg_debug "Check for warnings"
+	WARNINGS=`cat ${LOG_FILE} | grep "warning"`
+	WARNING_SCRIPT=../check_warning.sh
+	rm -f ${WARNING_SCRIPT}
+	if [ -n "$WARNINGS" ]; then
+		WARNING_FILE=`cat ${LOG_FILE} | grep "warning" | cut -d':' -f1`
+		WARNING_LINE=`cat ${LOG_FILE} | grep "warning" | cut -d':' -f2`
+		echo "gedit ${WARNING_FILE} +${WARNING_LINE}" >> ${WARNING_SCRIPT}
+		chmod a+x ${WARNING_SCRIPT}
+		msg_error "There are warnings! Run ./check_warning.sh"
+	else
+		msg_info "There are no warnings found"
+	fi
 }
  
 make_and_check() {
-        MAKE_COMMAND="${MAKE_VERBOSITY} ${MAKE_TIMING} make -j${CORES} ${PIPE_TO_FILE}"
-        msg_debug "We will perform the following command:${MAKE_COMMAND}"
-        eval ${MAKE_COMMAND}
- 
-        check_errors
-        check_warnings
+	MAKE_COMMAND="${MAKE_VERBOSITY} ${MAKE_TIMING} make -j${CORES} ${PIPE_TO_FILE}"
+	msg_debug "We will perform the following command:${MAKE_COMMAND}"
+	eval ${MAKE_COMMAND}
+
+	check_errors
+	check_warnings
 }
 
 final_install() {
@@ -184,23 +189,22 @@ build() {
 	include aim-devel/middleware_local.aim
 
 	msg_debug "Will build in subfolder: ${build_folder}/${middleware}"
-        mkdir -p ${build_folder}/${middleware}
-        cd ${build_folder}/${middleware}
- 
-        set_cores
-        set_verbosity
-        set_timing
-        set_logging
- 
-        cmake ../..
- 
-        make_and_check
-#	final_install
- 
-        msg_info "The result of our compilation efforts:"
-        cd ../..
-        msg_info "$(file ${build_folder}/${middleware}/$modulename)"
+		mkdir -p ${build_folder}/${middleware}
+		cd ${build_folder}/${middleware}
 
+		set_cores
+		set_verbosity
+		set_timing
+		set_logging
+
+		cmake ../..
+
+		make_and_check
+#	final_install
+
+		msg_info "The result of our compilation efforts:"
+		cd ../..
+		msg_info "$(file ${build_folder}/${middleware}/$modulename)"
 }
 
 check_nodegyp() {
@@ -213,7 +217,8 @@ check_nodegyp() {
 
 build_nodejs() {
 	msg_debug "Run rur-builder specific for nodejs"
-	rur-builder -b nodejs -i aim-config/$modulename.idl -p /usr/share/rur/backends -o aim-core -n $modulename
+	rur-builder -b rur_main_head -m nodejs -i aim-config/${modulename}.idl -p $RUR_BACKENDS_PATH -o aim-core/inc/${modulename}.h
+	rur-builder -b rur_main_impl -m nodejs -i aim-config/${modulename}.idl -p $RUR_BACKENDS_PATH -o aim-core/src/${modulename}.cpp
 	cd aim-config/nodejs
 	node-gyp configure
 	node-gyp build

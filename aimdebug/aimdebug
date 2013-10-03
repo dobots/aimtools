@@ -6,7 +6,7 @@
 
 PROGRAM="aimdebug"
 
-VERSION="0.2"
+VERSION="0.3"
 
 #######################################################################################################################
 # Default configuration
@@ -32,6 +32,11 @@ fi
 #######################################################################################################################
 # Argument checks
 #######################################################################################################################
+
+if [[ $AIM_VERSION != $VERSION ]]; then
+	msg_error "${PROGRAM} is version ${VERSION}, while it should be version ${AIM_VERSION}."
+	exit 0
+fi
 
 if [[ "$1" == "" ]]
 then
@@ -69,7 +74,7 @@ COMMAND[3]='which omniidl'
 COMMAND[4]='rur-builder -h'
 COMMAND[5]='cat /etc/lsb-release'
 COMMAND[6]='aimcreate-pkg -h'
-COMMAND[7]='cat /etc/rur/backends.cmake'
+COMMAND[7]='cat ${RUR_CONFIG_PATH}/backends.cmake'
 COMMAND[8]="cat $MODULENAME/aim-core/middleware_default.aim"
 
 for cmd in "${COMMAND[@]}"
