@@ -2,13 +2,38 @@
 
 PROGRAM="aimports"
 
-VERSION="$PROGRAM 0.1"
+VERSION="0.1"
 
+#######################################################################################################################
+# Default configuration
+#######################################################################################################################
 
+AIM_CONFIG_PATH=/etc/aim
+AIM_CONFIG_FILE=/etc/aim/config.sh
+
+include () {
+	test -f "$1" && source "$1"
+}
+
+#echo -e "[#] $(date +"%x %R") - Info: Source config files"
+source $AIM_CONFIG_FILE
+source $AIM_CONFIG_COLOR
+source $AIM_CONFIG_SANITY
+
+msg_init $PROGRAM
+
+#######################################################################################################################
+# Argument checks
+#######################################################################################################################
+
+if [[ $AIM_VERSION != $VERSION ]]; then
+	msg_error "${PROGRAM} is version ${VERSION}, while it should be version ${AIM_VERSION}."
+	exit 0
+fi
 
 if [[ "$1" == "-h" ]]
 then
-	echo $VERSION \- Usage
+	echo $PROGRAM $VERSION \- Usage
 	echo 
 	echo $PROGRAM 
 	echo
@@ -19,13 +44,6 @@ then
 	exit 1
 fi 
 
-
-
-
-# Configuration directory for RUR
-RUR_HOME=~/.rur/registry
-mkdir -p ${RUR_HOME}
-
 AIM_REGISTRY=$1.ports
 # echo ${AIM_REGISTRY}
 
@@ -35,15 +53,15 @@ index=0
 while read LINE; 
 do
 	port=$LINE
-        # port=`echo "$LINE" | cut -d' ' -f 1`
-        #if port -e "in"
-        #elif port -e "out"
-        #fi
+	# port=`echo "$LINE" | cut -d' ' -f 1`
+	#if port -e "in"
+	#elif port -e "out"
+	#fi
 	Registered_port[$index]=$port
 	index=$(($index + 1))
 #	echo $LINE
 #	echo $M_I_STRIPPED
-done < "${RUR_HOME}/${AIM_REGISTRY}"
+done < "${RUR_REGISTRY_PATH}/${AIM_REGISTRY}"
 
 #echo "success!!"
 

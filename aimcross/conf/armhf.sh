@@ -3,28 +3,16 @@
 # Setup for autotools
 # see also raspberry.mk which might be more appropriate for cmake
 
-####################################################################################################
-# Configuration
-####################################################################################################
+#######################################################################################################################
+# Default configuration
+#######################################################################################################################
 
-# Installation paths, the bin path is to store the application itself, the share path to store 
-# additional details such as helper python files, icons, translations. The config path to store 
-# configuration details, such as starting at booting.
-AIM_SHARE_PATH=/usr/share/aim
+AIM_CONFIG_PATH=/etc/aim
+AIM_CONFIG_FILE=/etc/aim/config.sh
 
-# Update paths by prepending it with DESTDIR so installation via the Ubuntu PPA works properly. This
-# causes a duplicate "//" when $DESTDIR is empty, which is no problem at all, just does not look so
-# nice.
-AIM_SHARE_PATH="$DESTDIR/$AIM_SHARE_PATH"
-
-# Default configuration files
-AIM_CONFIG_COLOR=$AIM_CONFIG_PATH/color.sh
-
-####################################################################################################
-# Tweaks and general configuration details
-####################################################################################################
-
+source $AIM_CONFIG_FILE
 source $AIM_CONFIG_COLOR
+source $AIM_CONFIG_SANITY
 
 ####################################################################################
 # Path and prefix to this specific cross-compiler

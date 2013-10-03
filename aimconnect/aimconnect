@@ -2,37 +2,20 @@
 
 PROGRAM="aimconnect"
 
-VERSION="$PROGRAM 0.1"
+VERSION="0.2"
 
-####################################################################################################
+#######################################################################################################################
 # Default configuration
-####################################################################################################
+#######################################################################################################################
 
-# Installation paths
-RUR_BIN_PATH=/usr/bin
-RUR_SHARE_PATH=/usr/share/rur
-RUR_TEMPLATE_PATH=$RUR_SHARE_PATH/templates
-RUR_BACKENDS_PATH=$RUR_SHARE_PATH/backends
-RUR_CONFIG_PATH=/etc/rur
+AIM_CONFIG_PATH=/etc/aim
+AIM_CONFIG_FILE=/etc/aim/config.sh
 
-# Working paths
-RUR_DATA_PATH=$HOME/.rur/data
-RUR_REGISTRY_PATH=$RUR_DATA_PATH/registry
+source $AIM_CONFIG_FILE
+source $AIM_CONFIG_COLOR
+source $AIM_CONFIG_SANITY
 
-# Configuration files
-RUR_CONFIG_FILE_BACKENDS=${RUR_CONFIG_PATH}/backends.conf
-RUR_CONFIG_FILE_BACKENDS_CMAKE=${RUR_CONFIG_PATH}/backends.cmake
-
-# Data(base) files
-AIM_REGISTRY=${RUR_DATA_PATH}/aim_registry.txt
-
-# Prepend with destination dir if DESTDIR is present
-RUR_SHARE_PATH="$DESTDIR/$RUR_SHARE_PATH"
-RUR_TEMPLATE_PATH="$DESTDIR/$RUR_TEMPLATE_PATH"
-RUR_BACKENDS_PATH="$DESTDIR/$RUR_BACKENDS_PATH"
-RUR_CONFIG_PATH="$DESTDIR/$RUR_CONFIG_PATH"
-
-#msg_init $PROGRAM
+msg_init $PROGRAM
 
 ####################################################################################################
 # User configuration
@@ -46,19 +29,24 @@ fi
 # Checks
 ####################################################################################################
 
+if [[ $AIM_VERSION != $VERSION ]]; then
+	msg_error "${PROGRAM} is version ${VERSION}, while it should be version ${AIM_VERSION}."
+	exit 0
+fi
+
 if [[ "$1" == "-h" ]]
 then
-	echo $VERSION \- Usage
+	echo $PROGRAM $VERSION \- Usage
 	echo 
 	echo $PROGRAM \"middleware\" \"module1 name\" \"module1 index\" \"module 1 port\" \"module 2 name\" \"module 2 index\" \"module 2 port\"
 	echo "  with middleware: [yarp | zeromq ]"
 	echo
 	exit 0 
-fi 
+fi
 
 if [[ $# -ne 7 ]]
 then
-	echo "[#] We need seven parameters. Run $0 -h for more info, currently you used $# parameters"
+	msg_error "We need seven parameters. Run $0 -h for more info, currently you used $# parameters"
 	exit 1
 fi
 
@@ -82,23 +70,23 @@ MODULE_ID2=${5%}
 PORT_NAME2=${6%}
 
 if [[ $MIDDLEWARE == "yarp" ]]; then
-	echo "[#] Check if yarp server is actually running"
+	msg_debug "Check if yarp server is actually running"
 	SERVER=$(ps aux | grep "yarp" | grep "server")
 	if [[ -z "$SERVER" ]]; then
-		echo "[#] Cannot find the server, start the yarp server first!"
+		msg_error "Cannot find the server, start the yarp server first!"
 		exit 0
 	fi
 elif [[ $MIDDLEWARE == "zeromq" ]]; then
-	echo "[#] Check if zmq server is actually running"
+	msg_debug "Check if zmq server is actually running"
 	SERVER=$(ps aux | grep "zmq" | grep "server")
 	if [[ -z "$SERVER" ]]; then
-		echo "[#] Cannot find the server, start the zmq server first!"
+		msg_error "Cannot find the server, start the zmq server first!"
 		exit 0
 	fi
 fi
 
 
-echo "[#] Search in ${RUR_HOME}/${AIM_REGISTRY}"
+msg_debug "Search in ${RUR_HOME}/${AIM_REGISTRY}"
 SUCCESS1=false
 SUCCESS2=false
 
@@ -107,7 +95,7 @@ while read LINE; do
 	MODULE_I=$(echo "$LINE" | cut -d'=' -f 1)
 	M_I_STRIPPED=${MODULE_I//[[:space:]]}
 	if [[  ${MODULE_NAME1} == ${M_I_STRIPPED}*  ]]; then
-		echo "[#] $MODULE_NAME1 found. prepare to connect it"
+		msg_debug "$MODULE_NAME1 found. prepare to connect it"
 		MODULE_FULLNAME=$(echo "$LINE" | cut -d'=' -f 2)
 		SUCCESS1=true
 		break
@@ -118,7 +106,7 @@ while read LINE; do
 	MODULE_I=$(echo "$LINE" | cut -d'=' -f 1)
 	M_I_STRIPPED=${MODULE_I//[[:space:]]}
 	if [[  ${MODULE_NAME2} == $M_I_STRIPPED* ]]; then
-		echo "[#] $MODULE_NAME2 found. prepare to connect it"
+		msg_debug "$MODULE_NAME2 found. prepare to connect it"
 		MODULE_FULLNAME=$(echo "$LINE" | cut -d'=' -f 2)
 		SUCCESS2=true
 		break
@@ -127,12 +115,12 @@ done < "${AIM_REGISTRY}"
 
 
 if [ $SUCCESS1 == true ] && [ $SUCCESS2 == true ]; then
-	echo "[#] Connect $MODULE_NAME1 and $MODULE_NAME2"
-	echo "[#] Exact command: /${MODULE_NAME1,,}$MODULE_ID1/$PORT_NAME1 /${MODULE_NAME2,,}$MODULE_ID2/$PORT_NAME2"
-#        sleep 1
+	msg_info"Connect $MODULE_NAME1 and $MODULE_NAME2"
+	msg_info "Exact command: /${MODULE_NAME1,,}$MODULE_ID1/$PORT_NAME1 /${MODULE_NAME2,,}$MODULE_ID2/$PORT_NAME2"
+#	sleep 1
 	$CONNECT_UTILITY /${MODULE_NAME1,,}$MODULE_ID1/$PORT_NAME1 /${MODULE_NAME2,,}$MODULE_ID2/$PORT_NAME2
 else
-	echo "One of the modules is not found (${MODULE_NAME1}) or (${MODULE_NAME2})"
+	msg_error "One of the modules is not found (${MODULE_NAME1}) or (${MODULE_NAME2})"
 fi
 
 exit 0
