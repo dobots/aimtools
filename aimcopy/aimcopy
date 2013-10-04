@@ -5,13 +5,35 @@
 
 PROGRAM="aimcopy" # or $0
 
-VERSION="$PROGRAM 0.1"
+VERSION="0.1"
+
+#######################################################################################################################
+# Default configuration
+#######################################################################################################################
+
+AIM_CONFIG_PATH=/etc/aim
+AIM_CONFIG_FILE=/etc/aim/config.sh
+
+source $AIM_CONFIG_FILE
+source $AIM_CONFIG_COLOR
+source $AIM_CONFIG_SANITY
+
+msg_init $PROGRAM
+
+####################################################################################################
+# Checks
+####################################################################################################
+
+if [[ $AIM_VERSION != $VERSION ]]; then
+	msg_error "${PROGRAM} is version ${VERSION}, while it should be version ${AIM_VERSION}."
+	exit 0
+fi
 
 sourcemodule=$1
 destmodule=$2
 
 if [ "$1" = "-h" ]; then
-	echo $VERSION \- Usage
+	echo $PROGRAM $VERSION \- Usage
 	echo
 	echo "$PROGRAM <source module name> <destination module name>"
 	exit 0

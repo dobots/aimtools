@@ -2,24 +2,46 @@
 
 PROGRAM="aimlogin"
 
-VERSION="$PROGRAM 0.1"
+VERSION="0.3"
+
+#######################################################################################################################
+# Default configuration
+#######################################################################################################################
+
+AIM_CONFIG_PATH=/etc/aim
+AIM_CONFIG_FILE=/etc/aim/config.sh
+
+source $AIM_CONFIG_FILE
+source $AIM_CONFIG_COLOR
+source $AIM_CONFIG_SANITY
+
+msg_init $PROGRAM
+
+####################################################################################################
+# Checks
+####################################################################################################
+
+if [[ $AIM_VERSION != $VERSION ]]; then
+	msg_error "${PROGRAM} is version ${VERSION}, while it should be version ${AIM_VERSION}."
+	exit 0
+fi
 
 # Check if we have sudo rights
 if [ `id -u` -eq 0 ]
 then
-	echo "Sorry, should not be run as super user"
+	msg_error "Sorry, should not be run as super user"
 	exit 1
 fi
 
 if [[ "$1" == "" ]]
 then
-	echo "No args supplied! Run $0 -h for more info"
+	msg_error "No args supplied! Run $0 -h for more info"
 	exit 1
 fi
 
 if [[ "$1" == "-h" ]]
 then
-	echo $VERSION \- Usage
+	echo $PROGRAM $VERSION \- Usage
 	echo
 	echo $PROGRAM \"identifier\"
 	echo

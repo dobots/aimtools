@@ -6,7 +6,7 @@
 
 PROGRAM="aimregister"
 
-VERSION="0.2"
+VERSION="0.3"
 
 #######################################################################################################################
 # Default configuration
@@ -33,6 +33,11 @@ fi
 # Argument checks
 #######################################################################################################################
 
+if [[ $AIM_VERSION != $VERSION ]]; then
+	msg_error "${PROGRAM} is version ${VERSION}, while it should be version ${AIM_VERSION}."
+	exit 0
+fi
+
 # Check if we have sudo rights, we should NOT
 if [ `id -u` -eq 0 ]
 then
@@ -48,7 +53,7 @@ fi
 
 if [[ "$1" == "-h" ]]
 then
-	echo $VERSION \- Usage
+	echo $PROGRAM $VERSION \- Usage
 	echo 
 	echo $PROGRAM \"ModuleName\"
 	echo

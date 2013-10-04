@@ -2,52 +2,41 @@
 
 PROGRAM="aimstop"
 
-VERSION="$PROGRAM 0.1"
+VERSION="0.3"
 
-####################################################################################################
+#######################################################################################################################
 # Default configuration
-####################################################################################################
+#######################################################################################################################
 
-# Installation paths
-RUR_BIN_PATH=/usr/bin
-RUR_SHARE_PATH=/usr/share/rur
-RUR_TEMPLATE_PATH=$RUR_SHARE_PATH/templates
-RUR_BACKENDS_PATH=$RUR_SHARE_PATH/backends
-RUR_CONFIG_PATH=/etc/rur
+AIM_CONFIG_PATH=/etc/aim
+AIM_CONFIG_FILE=/etc/aim/config.sh
 
-# Working paths
-RUR_DATA_PATH=$HOME/.rur/data
-RUR_REGISTRY_PATH=$RUR_DATA_PATH/registry
+source $AIM_CONFIG_FILE
+source $AIM_CONFIG_COLOR
+source $AIM_CONFIG_SANITY
 
-# Configuration files
-RUR_CONFIG_FILE_BACKENDS=${RUR_CONFIG_PATH}/backends.conf
-RUR_CONFIG_FILE_BACKENDS_CMAKE=${RUR_CONFIG_PATH}/backends.cmake
+msg_init $PROGRAM
 
-# Data(base) files
-AIM_REGISTRY=${RUR_DATA_PATH}/aim_registry.txt
-
-# Prepend with destination dir if DESTDIR is present
-RUR_SHARE_PATH="$DESTDIR/$RUR_SHARE_PATH"
-RUR_TEMPLATE_PATH="$DESTDIR/$RUR_TEMPLATE_PATH"
-RUR_BACKENDS_PATH="$DESTDIR/$RUR_BACKENDS_PATH"
-RUR_CONFIG_PATH="$DESTDIR/$RUR_CONFIG_PATH"
-
-
-####################################################################################################
+#######################################################################################################################
 # User configuration
-####################################################################################################
+#######################################################################################################################
 
 if [ -e ${RUR_CONFIG_FILE_BACKENDS} ]; then
 	source $RUR_CONFIG_FILE_BACKENDS
 fi
 
-####################################################################################################
-# Checks
-####################################################################################################
+#######################################################################################################################
+# Argument checks
+#######################################################################################################################
+
+if [[ $AIM_VERSION != $VERSION ]]; then
+	msg_error "${PROGRAM} is version ${VERSION}, while it should be version ${AIM_VERSION}."
+	exit 0
+fi
 
 if [[ "$1" == "-h" ]]
 then
-	echo "$VERSION - Usage"
+	echo "$PROGRAM $VERSION - Usage"
 	echo 
 	echo "$PROGRAM \"middleware\" \"module name\" \"module id\""
 	echo
@@ -56,7 +45,7 @@ fi
 
 if [[ $# -ne 3 ]]
 then
-	echo "[#] We need three parameters. Run $0 -h for more info, currently you used $# parameters"
+	msg_error "We need three parameters. Run $0 -h for more info, currently you used $# parameters"
 	exit 1
 fi
 
@@ -64,7 +53,7 @@ MIDDLEWARE=${1%}
 MODULE_NAME=${2%/}
 ModuleId=${3%/}
 
-echo "[#] Search in ${RUR_HOME}/${AIM_REGISTRY}"
+msg_debug "Search in ${RUR_HOME}/${AIM_REGISTRY}"
 SUCCESS=false
 MODULE_FULLNAME=
 while read LINE; do
@@ -88,7 +77,7 @@ done < "${RUR_REGISTRY_PATH}/$MODULE_NAME.ports"
 
 
 if [[ ! $SUCCESS == true ]]; then
-	echo "[#] No such module found ($MODULE_NAME)"
+	msg_error "No such module found ($MODULE_NAME)"
 	exit 1
 fi	
 
@@ -103,7 +92,6 @@ if [[ $MIDDLEWARE == "yarp" ]]; then
 	exit 0
 fi
 
-echo "[#] Stop $MODULE_NAME $ModuleId in a rigorous manner"
+msg_info "Stop $MODULE_NAME $ModuleId in a rigorous manner"
 pkill -9 $MODULE_NAME
 exit 0
-
