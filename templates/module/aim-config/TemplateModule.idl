@@ -1,17 +1,16 @@
 /**
  * IDL description of the TemplateModule
  *
- * This file is automatically parsed by the rurbuilder backends for the omniidl 
- * compiler. The names of the functions will become port identifiers. The names 
- * of the function variables are not used. For now, if the function variable 
- * ends with a number, like "void Sensor(in long input2);" there will be two
- * portnames created.
+ * This file is automatically parsed by the rurbuilder backends for the omniidl compiler. The names of the functions
+ * will become port identifiers. The names of the function variables are not used. 
+ *
+ * The syntax of the IDL file also allows for "inout", but not all middlewares will accept this yet.
  */
 
-#pragma author You
-#pragma copyright Your Company
-#pragma date 21 Jun. 2013
-#pragma license LGPLv3
+#pragma author               ${yourname}
+#pragma copyright            ${yourcompany}
+#pragma date                 ${date}
+#pragma license              ${license}
 
 // Recommended namespace "rur"
 module rur {
@@ -30,13 +29,13 @@ typedef sequence<long> long_seq;
 // The public interface of TemplateModule
 interface TemplateModule {
 
-  // Input from microphone in the form of an array
+  // Input from microphone in the form of an array (just an example)
   void Audio(in long_seq input);
 
-  // Input from infrared sensor
-  void Infrared(in long sensor_l);
+  // Input from infrared sensor (just an example)
+  void Infrared(in long input);
 
-  // A command to one of the wheels
+  // A command to one of the wheels (just an example)
   void LeftWheel(out long output);
 
 };
