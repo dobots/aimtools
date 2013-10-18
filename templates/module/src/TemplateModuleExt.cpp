@@ -2,15 +2,15 @@
  * @file TemplateModuleExt.cpp
  * @brief TemplateModule extension
  *
- * This file is created at "Your Company". It is open-source software and part of "Specific Software Project". This 
- * software is published under the GNU Lesser General Public license (LGPL).
+ * This file is created at "${yourorganisation}". It is open-source software and part of "${yourproject}". 
+ * This software is published under the ${license} license (${license_abbreviation}).
  *
- * Copyright © 2013 Your Name <your@email>
+ * Copyright © ${year} ${yourname} <${youremail}>
  *
- * @author	Your Name
- * @date	Current date
- * @company	Your Company
- * @project	Specific Software Project
+ * @author                   ${yourname}
+ * @date                     ${date}
+ * @organisation             ${yourorganisation}
+ * @project                  ${yourproject}
  */
 
 #include <TemplateModuleExt.h>

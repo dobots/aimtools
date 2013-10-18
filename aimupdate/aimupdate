@@ -50,6 +50,31 @@ if [[ "$error" != 0 ]]; then
 fi
 
 #######################################################################################################################
+# Functions
+#######################################################################################################################
+
+update_personal_info() {
+	working_path=$1
+	
+	if [ -e $HOME/.rur/personal_info.txt ]; then
+		source $HOME/.rur/personal_info.txt
+	else
+		source $RUR_CONFIG_PATH/personal_info.txt
+	fi
+	find $working_path -not -iwholename '*.svn' -type f | xargs sed -i -e "s|\${yourname}|$yourname|g"
+	find $working_path -not -iwholename '*.svn' -type f | xargs sed -i -e "s|\${youremail}|$youremail|g"
+	find $working_path -not -iwholename '*.svn' -type f | xargs sed -i -e "s|\${yourorganisation}|$yourorganisation|g"
+	find $working_path -not -iwholename '*.svn' -type f | xargs sed -i -e "s|\${yourproject}|$yourproject|g"
+	find $working_path -not -iwholename '*.svn' -type f | xargs sed -i -e "s|\${license}|$license|g"
+	find $working_path -not -iwholename '*.svn' -type f | xargs sed -i -e "s|\${license_abbreviation}|$license_abbreviation|g"
+	
+	thisyear=$(date +"%Y")
+	thisdate=$(date +"%b %e, %Y")
+	find $working_path -not -iwholename '*.svn' -type f | xargs sed -i -e "s|\${year}|$thisyear|g"
+	find $working_path -not -iwholename '*.svn' -type f | xargs sed -i -e "s|\${date}|$thisdate|g"
+}
+
+#######################################################################################################################
 # Start
 #######################################################################################################################
 
@@ -73,6 +98,9 @@ for file in $(find $tmpdir -not -iwholename '*.svn' -type f -name TemplateModule
 	mv -i $file $newfile
 done
 
+msg_info "Update personal info"
+update_personal_info $tmpdir
+
 msg_info "Actual copying of different files starts now"
 for file in $(find $tmpdir -type f); do
 	newfile=${file#$tmpdir/}
@@ -82,7 +110,6 @@ done
 
 msg_info "Copy the idl file from previous location to a new one"
 silent_cp aim/idl/*.idl aim-config/
-
 
 msg_info "Create masks for build directories in a .gitignore file"
 echo "builds/" >> .gitignore

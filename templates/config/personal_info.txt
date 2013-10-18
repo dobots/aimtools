@@ -1,0 +1,9 @@
+# Entities here will be searched for and replaced in the code and other files
+
+yourname="Homer J. Simpson"
+youremail="chunkylover53@aol.com"
+yourorganisation="Springfield Power Company"
+yourproject="Project Bootstrap"
+license="State"
+license_abbreviation="TR8OR"
+

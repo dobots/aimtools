@@ -72,15 +72,39 @@ if [[ "$error" != 0 ]]; then
 	exit 1
 fi
 
-####################################################################################################
-# Start
-####################################################################################################
-
-# Checks
 if [ -e $modulename ]; then
 	msg_error "\"${modulename}\" already exists!"
 	exit 1
 fi
+
+####################################################################################################
+# Functions
+####################################################################################################
+
+update_personal_info() {
+	working_path=$1
+	
+	if [ -e $HOME/.rur/personal_info.txt ]; then
+		source $HOME/.rur/personal_info.txt
+	else
+		source $RUR_CONFIG_PATH/personal_info.txt
+	fi
+	find $working_path -not -iwholename '*.svn' -type f | xargs sed -i -e "s|\${yourname}|$yourname|g"
+	find $working_path -not -iwholename '*.svn' -type f | xargs sed -i -e "s|\${youremail}|$youremail|g"
+	find $working_path -not -iwholename '*.svn' -type f | xargs sed -i -e "s|\${yourorganisation}|$yourorganisation|g"
+	find $working_path -not -iwholename '*.svn' -type f | xargs sed -i -e "s|\${yourproject}|$yourproject|g"
+	find $working_path -not -iwholename '*.svn' -type f | xargs sed -i -e "s|\${license}|$license|g"
+	find $working_path -not -iwholename '*.svn' -type f | xargs sed -i -e "s|\${license_abbreviation}|$license_abbreviation|g"
+	
+	thisyear=$(date +"%Y")
+	thisdate=$(date +"%b %e, %Y")
+	find $working_path -not -iwholename '*.svn' -type f | xargs sed -i -e "s|\${year}|$thisyear|g"
+	find $working_path -not -iwholename '*.svn' -type f | xargs sed -i -e "s|\${date}|$thisdate|g"
+}
+
+####################################################################################################
+# Start
+####################################################################################################
 
 # Create the proper directory
 msg_info "Create the directory $modulename"
@@ -101,6 +125,8 @@ find . -not -iwholename '*.svn' -type f | xargs sed -i -e "s/TemplateModule/$mod
 for F in $(find . -type f -name 'TemplateModule*'); do
 	mv $F ${F/TemplateModule/$modulename}
 done
+
+update_personal_info $modulepath
 
 if [ -n "$backend" ]; then
 	msg_info "We will use backend: $backend, feel free to use other ones later on!"
