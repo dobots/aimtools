@@ -60,11 +60,6 @@ cd "$modulename"
 modulepath=$(pwd)
 msg_info "Ready to copy templates from \"$RUR_TEMPLATE_PATH/\" to \"$modulepath/\""
 msg_info "Previous files can be overwritten, but the copy is with an -i flag. So it will interactively ask you."
-#read -p "Do you want to continue (y/N)? " user_continue
-#if [ "${user_continue}" != "y" ]; then
-#	msg_info "Aborted the updating process. You can always run $0 later"
-#	exit 1
-#fi
 
 msg_debug "Create temporary folder with matching files"
 tmpdir=$(mktemp -d -t aimXXXXX)
@@ -85,19 +80,9 @@ for file in $(find $tmpdir -type f); do
 	cmp --silent $file $newfile || cp -i $file $newfile 
 done
 
-exit
-
 msg_info "Copy the idl file from previous location to a new one"
 silent_cp aim/idl/*.idl aim-config/
 
-#msg_info "Rename all files with TemplateModule in their name, you probably do not want to replace your already \
-#existing files with them. To help you decide we first show a diff "
-#for file in $(find . -not -iwholename '*.svn' -type f -name TemplateModule*); do
-#	newfile=${file/TemplateModule/$modulename}
-#	diff -U 10 -s $file $newfile
-#	cmp --silent $file $newfile || mv -i $file $newfile
-#	rm -f $file
-#done
 
 msg_info "Create masks for build directories in a .gitignore file"
 echo "builds/" >> .gitignore
