@@ -8,7 +8,7 @@
  */
 
 #pragma author               ${yourname}
-#pragma copyright            ${yourcompany}
+#pragma copyright            ${yourorganisation}
 #pragma date                 ${date}
 #pragma license              ${license}
 
