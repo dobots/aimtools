@@ -6,7 +6,7 @@
 
 PROGRAM="aimbrowse"
 
-VERSION="0.2"
+VERSION="0.3"
 
 #######################################################################################################################
 # Default configuration
@@ -19,6 +19,17 @@ source $AIM_CONFIG_FILE
 source $AIM_CONFIG_COLOR
 source $AIM_CONFIG_SANITY
 
+msg_init $PROGRAM
+
+####################################################################################################
+# Checks
+####################################################################################################
+
+if [[ $AIM_VERSION != $VERSION ]]; then
+	msg_error "${PROGRAM} is version ${VERSION}, while it should be version ${AIM_VERSION}."
+	exit 0
+fi
+
 if [[ "$1" == "-h" ]]
 then
 	echo "$PROGRAM $VERSION - Usage"
@@ -28,9 +39,7 @@ then
 	echo
 	echo "Dependency: curl"
 	exit 0 
-fi 
-
-msg_init $PROGRAM
+fi
 
 #######################################################################################################################
 # Implementation

@@ -2,50 +2,42 @@
 
 PROGRAM="aimcross"
 
-VERSION="$PROGRAM 0.1"
+VERSION="0.1"
 
-####################################################################################################
-# Configuration
-####################################################################################################
+#######################################################################################################################
+# Default configuration
+#######################################################################################################################
 
-# Installation paths, the bin path is to store the application itself, the share path to store 
-# additional details such as helper python files, icons, translations. The config path to store 
-# configuration details, such as starting at booting.
-AIM_BIN_PATH=/usr/bin
-AIM_SHARE_PATH=/usr/share/aim
 AIM_CONFIG_PATH=/etc/aim
-AIM_CROSSCOMPILECONF_PATH=$AIM_SHARE_PATH/crosscompileconf
+AIM_CONFIG_FILE=/etc/aim/config.sh
 
-# Update paths by prepending it with DESTDIR so installation via the Ubuntu PPA works properly. Do
-# not worry about a duplicate "//", which is no problem at all, just does not look so nice.
-if [[ "$DESTDIR" != "" ]]; then
-	if [[ -e "$DESTDIR" ]]; then
-		AIM_BIN_PATH="$DESTDIR/$AIM_BIN_PATH"
-		AIM_SHARE_PATH="$DESTDIR/$AIM_SHARE_PATH"
-		AIM_CONFIG_PATH="$DESTDIR/$AIM_CONFIG_PATH"
-		AIM_CROSSCOMPILECONF_PATH="$DESTDIR/$AIM_CROSSCOMPILECONF_PATH"
-	else
-		msg_error "Destination $DESTDIR does not exist."
-		exit 1
-	fi
-fi
-
-# Default configuration files
-AIM_CONFIG_COLOR=$AIM_CONFIG_PATH/color.sh
-AIM_CONFIG_SANITY=$AIM_CONFIG_PATH/sanity.sh
-
-####################################################################################################
-# Tweaks and general configuration details
-####################################################################################################
-
+source $AIM_CONFIG_FILE
 source $AIM_CONFIG_COLOR
 source $AIM_CONFIG_SANITY
 
 msg_init $PROGRAM
 
 ####################################################################################################
+# Configuration
+####################################################################################################
+
+if [[ "$DESTDIR" != "" ]]; then
+	if [[ -e "$DESTDIR" ]]; then
+		msg_debug "Using ${DESTDIR}."
+	else
+		msg_error "Destination $DESTDIR does not exist."
+		exit 1
+	fi
+fi
+
+####################################################################################################
 # Checks
 ####################################################################################################
+
+if [[ $AIM_VERSION != $VERSION ]]; then
+	msg_error "${PROGRAM} is version ${VERSION}, while it should be version ${AIM_VERSION}."
+	exit 0
+fi
 
 if [[ "$1" == "" ]]
 then
@@ -55,7 +47,7 @@ fi
 
 if [[ "$1" == "-h" ]]
 then
-	echo $VERSION \- Usage
+	echo $PROGRAM $VERSION \- Usage
 	echo 
 	echo $PROGRAM \"ModuleName\"
 	echo
