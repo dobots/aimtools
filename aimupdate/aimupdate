@@ -104,7 +104,7 @@ update_personal_info $tmpdir
 msg_info "Actual copying of different files starts now"
 for file in $(find $tmpdir -type f); do
 	newfile=${file#$tmpdir/}
-	cmp --silent $file $newfile || diff -U 10 -s $file $newfile
+	cmp --silent $file $newfile || diff -U 10 -s $newfile $file
 	cmp --silent $file $newfile || cp -i $file $newfile 
 done
 
