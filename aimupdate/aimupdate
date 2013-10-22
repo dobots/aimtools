@@ -74,6 +74,23 @@ update_personal_info() {
 	find $working_path -not -iwholename '*.svn' -type f | xargs sed -i -e "s|\${date}|$thisdate|g"
 }
 
+
+copy_interactive() {
+	source=$1
+	sourcebasedir=$2
+	target=$3
+	targetbasedir=$4
+	if [ -e $target ]; then
+		cmp --silent "$source" "$target" || diff -U 10 -s "$target" "$source"
+		cmp --silent "$source" "$target" || cp -i "$source" "$target"
+	else
+		reldir=${source%/*}
+		reldir=${reldir#$sourcebasedir/}
+		mkdir -p "${targetbasedir}/${reldir}"
+		cp -i "$source" "$target"
+	fi
+}
+
 #######################################################################################################################
 # Start
 #######################################################################################################################
@@ -104,8 +121,7 @@ update_personal_info $tmpdir
 msg_info "Actual copying of different files starts now"
 for file in $(find $tmpdir -type f); do
 	newfile=${file#$tmpdir/}
-	cmp --silent $file $newfile || diff -U 10 -s $newfile $file
-	cmp --silent $file $newfile || cp -i $file $newfile 
+	copy_interactive $file $tmpdir $newfile $modulepath
 done
 
 msg_info "Copy the idl file from previous location to a new one"
