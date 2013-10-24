@@ -45,7 +45,9 @@ fi
 # Implementation
 #######################################################################################################################
 
-text=$(curl -s https://github.com/search\?q\=aim-config+in%3Apath+config.aim\&type\=Code | grep config.aim | grep title | grep href)
+# echo "Run curl with: " https://github.com/search?q=aim-config+in:path+config.aim+extension:aim&type=Code
+
+text=$(curl -s https://github.com/search\?q\=aim-config+in%3Apath+config.aim+extension%3Aaim\&type\=Code | grep config.aim | grep title | grep href)
 
 repos_txt=$(echo "$text" | cut -f2 -d'=' | cut -f2 -d'/')
 

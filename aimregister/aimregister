@@ -69,20 +69,10 @@ mkdir -p $RUR_REGISTRY_PATH
 
 MODULE_NAME=${1%/}
 
-BUILD_FOLDER=builds/standard
-
 IDL_FOLDER=${MODULE_NAME}/aim-config
 
 msg_info "Check ${MODULE_NAME} directory and default build location if there is a compiled binary"
-if [ -e "${MODULE_NAME}" ]; then
-	if [ -e "${MODULE_NAME}/${BUILD_FOLDER}/${MODULE_NAME}" ]; then
-		msg_info "Add \"${MODULE_NAME}\" to registry"
-	else
-		msg_error "Cannot find \"${MODULE_NAME}/${BUILD_FOLDER}/${MODULE_NAME}\""
-		msg_error "Make sure naming is consistent and the binary built properly"
-		exit 0
-	fi
-else
+if [ ! -e "${MODULE_NAME}" ]; then
 	msg_error "Cannot find \"${MODULE_NAME}\""
 	exit 0
 fi
