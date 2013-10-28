@@ -107,8 +107,16 @@ msg_debug "Create temporary folder with matching files"
 tmpdir=$(mktemp -d -t aimXXXXX)
 trap 'rm -rf "$tmpdir"' EXIT
 rsync -azulq $RUR_TEMPLATE_PATH/ $tmpdir
+
+modulename_lower=$(echo $modulename | tr "[A-Z]" "[a-z]")
 msg_debug "Using -print0 and xargs -0 between find and sed. If this does not work on BSD / Mac OS, tell us."
 find $tmpdir -not -iwholename '*.svn' -not -iwholename '/builds' -type f -print0 | xargs -0 sed -i -e "s/TemplateModule/$modulename/g"
+find $tmpdir -not -iwholename '*.svn' -not -iwholename '/builds' -type f -print0 | xargs -0 sed -i -e "s/templatemodule/$modulename_lower/g"
+
+for file in $(find $tmpdir -not -iwholename '*.svn' -type d -name templatemodule*); do
+	newfile=${file/templatemodule/$modulename_lower}
+	mv -i $file $newfile
+done
 
 for file in $(find $tmpdir -not -iwholename '*.svn' -type f -name TemplateModule*); do
 	newfile=${file/TemplateModule/$modulename}
