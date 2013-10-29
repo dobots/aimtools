@@ -110,6 +110,10 @@ rsync -azulq $RUR_TEMPLATE_PATH/ $tmpdir
 msg_debug "Using -print0 and xargs -0 between find and sed. If this does not work on BSD / Mac OS, tell us."
 find $tmpdir -not -iwholename '*.svn' -not -iwholename '/builds' -type f -print0 | xargs -0 sed -i -e "s/TemplateModule/$modulename/g"
 
+# also replace template module in lower case
+modulename_lc=$(echo $modulename | tr '[:upper:]' '[:lower:]')
+find $tmpdir -not -iwholename '*.svn' -not -iwholename '/builds' -type f -print0 | xargs -0 sed -i -e "s/templatemodule/$modulename_lc/g"
+
 for file in $(find $tmpdir -not -iwholename '*.svn' -type f -name TemplateModule*); do
 	newfile=${file/TemplateModule/$modulename}
 	mv -i $file $newfile
