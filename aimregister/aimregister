@@ -69,20 +69,14 @@ mkdir -p $RUR_REGISTRY_PATH
 
 MODULE_NAME=${1%/}
 
-BUILD_FOLDER=builds/standard
+CONFIG_FOLDER=${MODULE_NAME}/aim-config
+CORE_FOLDER=${MODULE_NAME}/aim-core
 
-IDL_FOLDER=${MODULE_NAME}/aim-config
+DEPLOYMENT_FILE=${CORE_FOLDER}/aim_deployment.json
+CONFIG_FILE=${CONFIG_FOLDER}/config.aim
 
 msg_info "Check ${MODULE_NAME} directory and default build location if there is a compiled binary"
-if [ -e "${MODULE_NAME}" ]; then
-	if [ -e "${MODULE_NAME}/${BUILD_FOLDER}/${MODULE_NAME}" ]; then
-		msg_info "Add \"${MODULE_NAME}\" to registry"
-	else
-		msg_error "Cannot find \"${MODULE_NAME}/${BUILD_FOLDER}/${MODULE_NAME}\""
-		msg_error "Make sure naming is consistent and the binary built properly"
-		exit 0
-	fi
-else
+if [ ! -e "${MODULE_NAME}" ]; then
 	msg_error "Cannot find \"${MODULE_NAME}\""
 	exit 0
 fi
@@ -105,7 +99,78 @@ if [ ! -e "${RUR_BACKENDS_PATH}/extract.py" ]; then
 	exit 0
 fi
 #rur-builder -b extract -i ${IDL_FOLDER}/${MODULE_NAME}.idl -p ${RUR_BACKENDS_PATH} -o "." -n "ports.txt"
-omniidl -p${RUR_BACKENDS_PATH} -brur_extract -Wbstandard -K "${IDL_FOLDER}/${MODULE_NAME}.idl" > "ports.txt"
+#echo "omniidl -p${RUR_BACKENDS_PATH} -brur_extract -Wbstandard -K \"${IDL_FOLDER}/${MODULE_NAME}.idl\" > ports.txt" 
+omniidl -p${RUR_BACKENDS_PATH} -brur_extract -Wbstandard -K "${CONFIG_FOLDER}/${MODULE_NAME}.idl" > "ports.txt"
+
+msg_info "Read configuration file $CONFIG_FILE"
+source ${CONFIG_FILE}
+
+if [ "${application_type}" == "" ]; then
+	msg_error "Please, set application_type in $CONFIG_FILE" 
+	exit
+fi
+if [ "${android_package}" == "" ]; then
+	msg_error "Please, set android_package in $CONFIG_FILE" 
+	exit
+fi
+if [ "${android_url}" == "" ]; then
+	msg_error "Please, set android_url in $CONFIG_FILE" 
+	exit
+fi
+
+# The result will be something like this:
+# {
+#	"name": "SomeModule",
+#	"type": "UI",
+#	"android": {
+#   		"package": "com.example.somemodule",
+#		"url": "https://play.google.com/store/apps/details?id=com.example.somemodule"
+#	},
+#	"ports": [
+#		{
+#			"name": "microphone",
+#			"dir": "in",
+#			"type": "floatarray"
+#		},
+#		{
+#			"name": "command",
+#			"dir": "out",
+#			"type": "float",
+#			"middleware": "yarp"
+#		}
+#	]
+#}
+
+msg_info "Write deployment information to $DEPLOYMENT_FILE"
+echo '{' > $DEPLOYMENT_FILE
+echo -e "\t\"name\":\"${MODULE_NAME}\"," >> $DEPLOYMENT_FILE
+echo -e "\t\"type\":\"${application_type}\"," >> $DEPLOYMENT_FILE
+echo -e "\t\"android\": {" >> $DEPLOYMENT_FILE
+echo -e "\t\t\"package\":\"${android_package}\"," >> $DEPLOYMENT_FILE
+echo -e "\t\t\"url\":\"${android_url}\"" >> $DEPLOYMENT_FILE
+echo -e "\t}," >> $DEPLOYMENT_FILE
+echo -e "\t\"ports\": [" >> $DEPLOYMENT_FILE
+
+port_cnt=$(< ports.txt wc -l)
+#msg_info "Write $port_cnt ports"
+
+index=0
+while read line; do
+	read -a array <<< "$line"
+	((index++))
+	echo -e "\t\t{" >> $DEPLOYMENT_FILE
+	echo -e "\t\t\t\"name\":\"${array[1]}\"," >> $DEPLOYMENT_FILE
+	echo -e "\t\t\t\"dir\":\"${array[0]}\"," >> $DEPLOYMENT_FILE
+	echo -e "\t\t\t\"type\":\"${array[3]}\"," >> $DEPLOYMENT_FILE
+	echo -e "\t\t\t\"middleware\":\"${array[2]}\"" >> $DEPLOYMENT_FILE
+	if [ "$index" -eq "$port_cnt" ]; then
+		echo -e "\t\t}" >> $DEPLOYMENT_FILE
+	else
+		echo -e "\t\t}," >> $DEPLOYMENT_FILE
+	fi
+done <ports.txt
+echo -e "\t]" >> $DEPLOYMENT_FILE
+echo '}' >> $DEPLOYMENT_FILE
 
 msg_info "Write port definition to ${MODULE_NAME}.ports file in registry"
 mv ports.txt ${RUR_REGISTRY_PATH}/${MODULE_NAME}.ports

@@ -130,6 +130,10 @@ for D in $(find . -type d -name 'templatemodule*'); do
 	mv $D ${D/templatemodule/$modulename_lower}
 done
 
+# also replace template module in lower case
+modulename_lc=$(echo $modulename | tr '[:upper:]' '[:lower:]')
+find . -not -iwholename '*.svn' -type f | xargs sed -i -e "s/templatemodule/$modulename_lc/g"
+
 for F in $(find . -type f -name 'TemplateModule*'); do
 	mv $F ${F/TemplateModule/$modulename}
 done

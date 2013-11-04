@@ -118,6 +118,10 @@ for file in $(find $tmpdir -not -iwholename '*.svn' -type d -name templatemodule
 	mv -i $file $newfile
 done
 
+# also replace template module in lower case
+modulename_lc=$(echo $modulename | tr '[:upper:]' '[:lower:]')
+find $tmpdir -not -iwholename '*.svn' -not -iwholename '/builds' -type f -print0 | xargs -0 sed -i -e "s/templatemodule/$modulename_lc/g"
+
 for file in $(find $tmpdir -not -iwholename '*.svn' -type f -name TemplateModule*); do
 	newfile=${file/TemplateModule/$modulename}
 	mv -i $file $newfile

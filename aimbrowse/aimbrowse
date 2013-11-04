@@ -19,35 +19,53 @@ source $AIM_CONFIG_FILE
 source $AIM_CONFIG_COLOR
 source $AIM_CONFIG_SANITY
 
-msg_init $PROGRAM
-
-####################################################################################################
+#######################################################################################################################
 # Checks
-####################################################################################################
+#######################################################################################################################
 
 if [[ $AIM_VERSION != $VERSION ]]; then
 	msg_error "${PROGRAM} is version ${VERSION}, while it should be version ${AIM_VERSION}."
 	exit 0
 fi
 
-if [[ "$1" == "-h" ]]
-then
+if [[ "$1" == "-h" ]]; then
 	echo "$PROGRAM $VERSION - Usage"
 	echo 
-	echo "$PROGRAM"
-	echo "  no arguments required"
+	echo "$PROGRAM [output]"
+	echo "  no arguments required, but if output file defined, will write results to that file"
 	echo
 	echo "Dependency: curl"
 	exit 0 
+fi
+
+resultfile=
+if [[ "$1" != "" ]]; then
+	resultfile=$1
+else
+	msg_init $PROGRAM
 fi
 
 #######################################################################################################################
 # Implementation
 #######################################################################################################################
 
-text=$(curl -s https://github.com/search\?q\=aim-config+in%3Apath+config.aim\&type\=Code | grep config.aim | grep title | grep href)
+# echo "Run curl with: " https://github.com/search?q=aim-config+in:path+config.aim+extension:aim&type=Code
+
+# do NOT use quotes here
+search_file=aim_deployment.json
+
+# do NOT use quotes here
+search_str=https://github.com/search\?q\=$search_file+in%3Apath+aim-core\&type\=Code
+
+#search_str="https://github.com/search\?q\=aim-config+in%3Apath+config.aim+extension%3Aaim\&type\=Code"
+
+# again, do NOT use quotes here
+text=$(curl -s $search_str | grep $search_file | grep title | grep href)
+#echo $text > tmp.txt
 
 repos_txt=$(echo "$text" | cut -f2 -d'=' | cut -f2 -d'/')
+
+repos_project_txt=$(echo "$text" | cut -f2 -d'=' | cut -f3 -d'/')
 
 file_txt=$(echo "$text" | cut -f3 -d'=' | cut -f2 -d'"')
 
@@ -55,6 +73,7 @@ module_txt=$(echo "$file_txt" | cut -f1 -d'/')
 
 IFS=$'\n' read -d '' -r -a repos <<< "$repos_txt"
 IFS=$'\n' read -d '' -r -a module <<< "$module_txt"
+IFS=$'\n' read -d '' -r -a repos_project <<< "$repos_project_txt"
 
 nof_repos=${#repos[@]}
 nof_modules=${#module[@]}
@@ -69,3 +88,11 @@ fi
 for (( i=0; i<$nof_modules; i++ )); do
 	msg_info "Repository \"${repos[$i]}\" contains module \"${module[$i]}\""
 done
+
+if [[ "$resultfile" != "" ]]; then
+	rm -f $resultfile
+	msg_info "Write results to $resultfile"
+	for (( i=0; i<$nof_modules; i++ )); do
+		echo " ${module[$i]} ${repos[$i]} ${repos_project[$i]}" >> $resultfile 
+	done
+fi
