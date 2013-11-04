@@ -226,6 +226,17 @@ build_nodejs() {
 	rsync -avzul build/ ../../builds/nodejs
 }
 
+build_android() {
+	modulename_lower=$(echo $modulename | tr "[A-Z]" "[a-z]")
+	msg_debug "Run rur-builder specific for android"
+	rur-builder -b rur_main_head -m android -i aim-config/${modulename}.idl -p $RUR_BACKENDS_PATH -o aim-core/inc/${modulename}.h
+	rur-builder -b rur_main_impl -m android -i aim-config/${modulename}.idl -p $RUR_BACKENDS_PATH -o aim-core/src/${modulename}.cpp
+	rur-builder -b rur_android_service -m android -i aim-config/${modulename}.idl -p $RUR_BACKENDS_PATH -o aim-config/android/src/org/dobots/${modulename_lower}/aim/${modulename}Service.java
+	cd aim-config/android
+	swig -c++ -java -package org.dobots.${modulename_lower}.aim -outdir src/org/dobots/${modulename_lower}/aim -o jni/${modulename}_wrap.cpp jni/${modulename}.i
+	ndk-build clean && ndk-build
+}
+
 #######################################################################################################################
 # Program execution
 #######################################################################################################################
@@ -236,6 +247,8 @@ if [ $middleware == "ros" ]; then
 fi
 if [ $middleware == "nodejs" ]; then
 	build_nodejs
+elif [ $middleware == "android" ]; then
+	build_android
 else
 	build
 fi
