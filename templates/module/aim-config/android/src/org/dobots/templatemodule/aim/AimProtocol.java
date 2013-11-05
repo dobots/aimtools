@@ -1,4 +1,4 @@
-package org.dobots.dodedodo;
+package org.dobots.templatemodule.aim;
 
 public final class AimProtocol {
 	public static final int MSG_REGISTER = 1;
