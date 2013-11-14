@@ -83,6 +83,7 @@ cd "$modulename"
 
 target=host
 
+msg_debug "Source middleware config files"
 include aim-core/middleware_default.aim
 include aim-devel/middleware_local.aim
 
@@ -184,27 +185,28 @@ build() {
 	include aim-config/config.aim
 	msg_debug "Found as build_folder: ${build_folder}"
 
-	msg_debug "Source middleware config files"
-	include aim-core/middleware_default.aim
-	include aim-devel/middleware_local.aim
+# already done before
+#	msg_debug "Source middleware config files"
+#	include aim-core/middleware_default.aim
+#	include aim-devel/middleware_local.aim
 
 	msg_debug "Will build in subfolder: ${build_folder}/${middleware}"
-		mkdir -p ${build_folder}/${middleware}
-		cd ${build_folder}/${middleware}
+	mkdir -p ${build_folder}/${middleware}
+	cd ${build_folder}/${middleware}
 
-		set_cores
-		set_verbosity
-		set_timing
-		set_logging
+	set_cores
+	set_verbosity
+	set_timing
+	set_logging
 
-		cmake ../..
+	cmake ../..
 
-		make_and_check
+	make_and_check
 #	final_install
 
-		msg_info "The result of our compilation efforts:"
-		cd ../..
-		msg_info "$(file ${build_folder}/${middleware}/$modulename)"
+	msg_info "The result of our compilation efforts:"
+	cd ../..
+	msg_info "$(file ${build_folder}/${middleware}/$modulename)"
 }
 
 check_nodegyp() {
