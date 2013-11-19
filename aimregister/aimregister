@@ -45,12 +45,6 @@ then
 	exit 1
 fi
 
-if [[ "$1" == "" ]]
-then
-	msg_error "No args supplied! Run $0 -h for more info"
-	exit 1
-fi
-
 if [[ "$1" == "-h" ]]
 then
 	echo $PROGRAM $VERSION \- Usage
@@ -60,6 +54,14 @@ then
 	exit 0 
 fi 
 
+if [[ "$1" == "" ]]; then
+	MODULE_NAME=${PWD##*/}
+	msg_info "We will try to make $MODULE_NAME"
+	cd ..
+else
+	MODULE_NAME=${1%/}
+fi
+
 #######################################################################################################################
 # Actual script content
 #######################################################################################################################
@@ -67,13 +69,34 @@ fi
 mkdir -p $RUR_DATA_PATH
 mkdir -p $RUR_REGISTRY_PATH
 
-MODULE_NAME=${1%/}
-
 CONFIG_FOLDER=${MODULE_NAME}/aim-config
 CORE_FOLDER=${MODULE_NAME}/aim-core
 
 DEPLOYMENT_FILE=${CORE_FOLDER}/aim_deployment.json
 CONFIG_FILE=${CONFIG_FOLDER}/config.aim
+
+PERSONAL_RUR_FOLDER=${HOME}/.rur
+PERSONAL_INFO_FILE=${PERSONAL_RUR_FOLDER}/personal_info.txt
+
+if [ ! -e "${PERSONAL_INFO_FILE}" ]; then
+	binary_question "Your personal information is not set yet, do you want to set it now [y/N]? " userinput
+	if [[ $userinput -eq 1 ]]; then
+		question "What is your name [Homer J. Simpson]? " name
+		question "What is your email address [chunkylover53@aol.com]? " email
+		question "What is your organisation [Springfield Power Company]? " organisation
+		question "What is the project you work on [Project Bootstrap]? " project
+		question "What is the full license name [Apache License]? " license
+		question "What is the abbreviated license code [LGPLv3]? " license_abbr
+	fi
+	mkdir -p ${PERSONAL_RUR_FOLDER}
+	echo "# Automatically filled in using aimregistry (feel free to adjust)" > $PERSONAL_INFO_FILE
+	echo "yourname=\"${name}\"" >> $PERSONAL_INFO_FILE
+	echo "youremail=\"${email}\"" >> $PERSONAL_INFO_FILE
+	echo "yourorganisation=\"${organisation}\"" >> $PERSONAL_INFO_FILE
+	echo "yourproject=\"${project}\"" >> $PERSONAL_INFO_FILE
+	echo "license=\"${license}\"" >> $PERSONAL_INFO_FILE
+	echo "license_abbreviation=\"${license_abbr}\"" >> $PERSONAL_INFO_FILE
+fi
 
 msg_info "Check ${MODULE_NAME} directory and default build location if there is a compiled binary"
 if [ ! -e "${MODULE_NAME}" ]; then

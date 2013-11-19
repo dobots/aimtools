@@ -43,26 +43,28 @@ if [[ $AIM_VERSION != $VERSION ]]; then
 	exit 0
 fi
 
-if [[ "$1" == "" ]]
-then
-	msg_error "No args supplied! Run $0 -h for more info"
-	exit 1
-fi
-
 if [[ "$1" == "-h" ]]
 then
 	echo $PROGRAM $VERSION \- Usage
 	echo 
-	echo $PROGRAM \"ModuleName\"
+	echo $PROGRAM \"[ModuleName]\"
+	echo
+	echo "It is possible to run aimmake also in the module directory itself, then it does not require an argument"
 	echo
 	exit 0 
 fi 
 
+if [[ "$1" == "" ]]; then
+	modulename=${PWD##*/}
+	msg_info "We will try to make $modulename"
+	cd ..
+else
+	modulename="$1"
+fi
+
 #######################################################################################################################
 # Specific checks
 #######################################################################################################################
-
-modulename="$1"
 
 aim_sanity $modulename error
 if [[ "$error" != 0 ]]; then
