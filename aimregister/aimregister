@@ -106,15 +106,23 @@ msg_info "Read configuration file $CONFIG_FILE"
 source ${CONFIG_FILE}
 
 if [ "${application_type}" == "" ]; then
-	msg_error "Please, set application_type in $CONFIG_FILE" 
+	msg_error "Please, set \"application_type\" in $CONFIG_FILE" 
 	exit
 fi
 if [ "${android_package}" == "" ]; then
-	msg_error "Please, set android_package in $CONFIG_FILE" 
+	msg_error "Please, set \"android_package\" in $CONFIG_FILE" 
 	exit
 fi
 if [ "${android_url}" == "" ]; then
-	msg_error "Please, set android_url in $CONFIG_FILE" 
+	msg_error "Please, set \"android_url\" in $CONFIG_FILE" 
+	exit
+fi
+if [ "${description}" == "" ]; then
+	msg_error "Please, set \"description\" in $CONFIG_FILE" 
+	exit
+fi
+if [ "${enable}" == "" ]; then
+	msg_error "Please, set \"enable\" in $CONFIG_FILE" 
 	exit
 fi
 
@@ -122,6 +130,8 @@ fi
 # {
 #	"name": "SomeModule",
 #	"type": "UI",
+#	"description: "Amazing skills",
+#	"enable": "true",
 #	"android": {
 #   		"package": "com.example.somemodule",
 #		"url": "https://play.google.com/store/apps/details?id=com.example.somemodule"
@@ -145,6 +155,8 @@ msg_info "Write deployment information to $DEPLOYMENT_FILE"
 echo '{' > $DEPLOYMENT_FILE
 echo -e "\t\"name\":\"${MODULE_NAME}\"," >> $DEPLOYMENT_FILE
 echo -e "\t\"type\":\"${application_type}\"," >> $DEPLOYMENT_FILE
+echo -e "\t\"description\":\"${description}\"," >> $DEPLOYMENT_FILE
+echo -e "\t\"enable\":\"${enable}\"," >> $DEPLOYMENT_FILE
 echo -e "\t\"android\": {" >> $DEPLOYMENT_FILE
 echo -e "\t\t\"package\":\"${android_package}\"," >> $DEPLOYMENT_FILE
 echo -e "\t\t\"url\":\"${android_url}\"" >> $DEPLOYMENT_FILE
@@ -154,6 +166,7 @@ echo -e "\t\"ports\": [" >> $DEPLOYMENT_FILE
 port_cnt=$(< ports.txt wc -l)
 #msg_info "Write $port_cnt ports"
 
+# write now all the port information to the file
 index=0
 while read line; do
 	read -a array <<< "$line"

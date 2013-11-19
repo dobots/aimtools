@@ -57,6 +57,7 @@ search_file=aim_deployment.json
 # do NOT use quotes here
 search_str=https://github.com/search\?q\=$search_file+in%3Apath+aim-core\&type\=Code
 
+msg_info "Use as link: $search_str"
 #search_str="https://github.com/search\?q\=aim-config+in%3Apath+config.aim+extension%3Aaim\&type\=Code"
 
 # again, do NOT use quotes here
