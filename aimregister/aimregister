@@ -100,7 +100,7 @@ if [ ! -e "${RUR_BACKENDS_PATH}/extract.py" ]; then
 fi
 #rur-builder -b extract -i ${IDL_FOLDER}/${MODULE_NAME}.idl -p ${RUR_BACKENDS_PATH} -o "." -n "ports.txt"
 #echo "omniidl -p${RUR_BACKENDS_PATH} -brur_extract -Wbstandard -K \"${IDL_FOLDER}/${MODULE_NAME}.idl\" > ports.txt" 
-omniidl -p${RUR_BACKENDS_PATH} -brur_extract -Wbstandard -K "${CONFIG_FOLDER}/${MODULE_NAME}.idl" > "ports.txt"
+omniidl -p${RUR_BACKENDS_PATH} -brur_extract -Wbdefault -K "${CONFIG_FOLDER}/${MODULE_NAME}.idl" > "ports.txt"
 
 msg_info "Read configuration file $CONFIG_FILE"
 source ${CONFIG_FILE}
