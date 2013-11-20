@@ -90,3 +90,42 @@ msg_debug() {
 	echo -e ${BlueF}"[$msg_prefix] $(date +"%x %R") - Debug: $1"${Reset}
 }
 
+binary_question() {
+	# allows for a second optional argument
+	local __result=$2
+	# if not set the result will be an echo (not so useful in this context)
+	local myresult=0
+	local questionstr="$1"
+
+	echo -en ${GreenF}"[$msg_prefix] $(date +"%x %R") - Question: $questionstr"${Reset}
+	
+	read input
+	if [[ "$input" == "y" ]]; then
+		myresult=1
+	fi
+
+	if [[ "$__result" ]]; then
+		eval $__result="'$myresult'"
+	else
+		echo "$myresult"
+	fi
+}
+
+question() {
+	# allows for a second optional argument
+	local __result=$2
+	# if not set the result will be an echo (not so useful in this context)
+	local myresult=""
+	local questionstr="$1"
+
+	echo -en ${GreenF}"[$msg_prefix] $(date +"%x %R") - Question: $questionstr"${Reset}
+	
+	read myresult
+
+	if [[ "$__result" ]]; then
+		eval $__result="'$myresult'"
+	else
+		echo "$myresult"
+	fi
+}
+

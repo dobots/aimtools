@@ -7,5 +7,5 @@ enable='true'
 # The application types that are possible: UI, background
 application_type=background
 # For deployment as Android package
-android_package='com.dobots.templatemodule'
-android_url='https://play.google.com/store/apps/details?id=com.dobots.templatemodule'
+android_package='org.dobots.templatemodule'
+android_url='https://play.google.com/store/apps/details?id=org.dobots.templatemodule'
