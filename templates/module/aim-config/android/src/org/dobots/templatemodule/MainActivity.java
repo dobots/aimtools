@@ -57,13 +57,13 @@ protected void onCreate(Bundle savedInstanceState) {
 	@Override
 	public void onStart() {
 		super.onStart();
-		Log.i(TAG,"onStart");
+		Log.d(TAG,"onStart");
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.i(TAG,"onResume");
+		Log.d(TAG,"onResume");
 		mCheckServiceTimerTask = new CheckServiceTimerTask();
 		mCheckServiceTimer.schedule(mCheckServiceTimerTask ,0, 1000);
 	}
@@ -71,20 +71,20 @@ protected void onCreate(Bundle savedInstanceState) {
 	@Override
 	public void onPause() {
 		super.onPause();
-		Log.i(TAG,"onPause");
+		Log.d(TAG,"onPause");
 		mCheckServiceTimerTask.cancel();
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
-		Log.i(TAG,"onStop");
+		Log.d(TAG,"onStop");
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		Log.i(TAG, "onDestroy");
+		Log.d(TAG, "onDestroy");
 		mCheckServiceTimer.cancel();
 	}
 
@@ -98,6 +98,7 @@ protected void onCreate(Bundle savedInstanceState) {
 	private void startService() {
 		Intent intent = new Intent();
 		intent.setClassName("org.dobots.templatemodule", "org.dobots.templatemodule.aim.TemplateModuleService");
+		intent.putExtra("id", 0); // Default id
 		ComponentName name = startService(intent);
 		Log.i(TAG, "Starting: " + intent.toString());
 	}
@@ -127,7 +128,7 @@ protected void onCreate(Bundle savedInstanceState) {
 	}
     
     private boolean checkServiceRunning() {
-		Log.i(TAG, "Checking if service is running");
+		Log.d(TAG, "Checking if service is running");
 		ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 		for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
 			if (TemplateModuleService.class.getName().equals(service.service.getClassName())) {

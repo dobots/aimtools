@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="org.dobots.templatemodule"
 	android:versionCode="1"
-	android:versionName="1.0" >
+	android:versionName="0.1" >
 	
 	<uses-sdk
 		android:minSdkVersion="8"
@@ -30,7 +30,8 @@
 		
 		<service
 			android:name=".aim.TemplateModuleService"
-			android:process=":remote" >
+			>
+			<!-- android:process=":remote" > -->
 			<intent-filter>
 				<action android:name="android.intent.action.RUN" />
 				<category android:name="android.intent.category.DEFAULT" />

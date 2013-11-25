@@ -47,7 +47,7 @@ public class TemplateModuleService extends Service {
 		super.onDestroy();
 		mAIMRun.cancel(true);
 		unbindFromMsgService();
-		Log.i(TAG, "onDestroy");
+		Log.d(TAG, "onDestroy");
 	}
 	
 	@Override
@@ -258,7 +258,7 @@ public class TemplateModuleService extends Service {
 			vector_float seqInput = new vector_float();
 			
 			while (true) {
-				Log.i(TAG, "mPortOutBuffer=" + mPortOutBuffer);
+				Log.d(TAG, "mPortOutBuffer=" + mPortOutBuffer);
 				synchronized(mPortOutBuffer) {
 					if (!mPortOutBuffer.isEmpty()) {
 						input = Math.round(mPortOutBuffer.get(0));
@@ -272,7 +272,7 @@ public class TemplateModuleService extends Service {
 				
 				output = aim.androidReadPort();
 				if (output.getSuccess()) {
-					Log.i(TAG, "Output=" + output.getVal());
+					Log.d(TAG, "Output=" + output.getVal());
 					Message msg = Message.obtain(null, MSG_PORT_DATA);
 					Bundle bundle = new Bundle();
 					bundle.putInt("datatype", DATATYPE_FLOAT);
@@ -283,9 +283,9 @@ public class TemplateModuleService extends Service {
 				
 				seqOutput = aim.androidReadSeqPort();
 				if (seqOutput.getSuccess()) {
-					Log.i(TAG, "seqOutput=" + seqOutput.getVal().toString() + " ");
+					Log.d(TAG, "seqOutput=" + seqOutput.getVal().toString() + " ");
 					for (int i=0; i<seqOutput.getVal().size(); i++) {
-						Log.i(TAG, seqOutput.getVal().get(i) + " ");
+						Log.d(TAG, seqOutput.getVal().get(i) + " ");
 					}
 					// TODO: generated msgSend
 				}
