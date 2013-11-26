@@ -149,36 +149,88 @@ if [ "${enable}" == "" ]; then
 	exit
 fi
 
-# The result will be something like this:
-# {
-#	"name": "SomeModule",
-#	"type": "UI",
-#	"description: "Amazing skills",
-#	"enable": "true",
-#	"android": {
-#   		"package": "com.example.somemodule",
-#		"url": "https://play.google.com/store/apps/details?id=com.example.somemodule"
-#	},
-#	"ports": [
-#		{
-#			"name": "microphone",
-#			"dir": "in",
-#			"type": "floatarray"
+
+#	{
+#		"name": "git/repo/SomeModule",
+#		"type": "UI",
+#		"category": "Computer vision",
+#		"description": "Description to be used on the website",
+#		"long_description": "Some very long description. Be careful with double quotes.",
+#		"default_middleware": "zeromq",
+#		"img_url": "https://raw.github.com/dobots/somemodule/aim_config/assets/icon.png",
+#		"supported_middleware": [ "yarp", "android", "ros", "zeromq" ],
+#		"supported_devices": ["raspberrypi", "android", "ubuntu"],
+#		"enable": "true",
+#		"git": "https://github.com/dobots/somemodule.git",
+#		"android": {
+#			"package": "com.example.somemodule",
+#			"url": "https://play.google.com/store/apps/details?id=com.example.somemodule"
 #		},
-#		{
-#			"name": "command",
-#			"dir": "out",
-#			"type": "float",
-#			"middleware": "yarp"
-#		}
-#	]
-#}
+#		"ports": [
+#			{
+#				"name": "microphone",
+#				"dir": "in",
+#				"type": "floatarray",
+#				"middleware": "default"
+#			},
+#			{
+#				"name": "command",
+#				"dir": "out",
+#				"type": "float",
+#				"middleware": "yarp"
+#			}
+#		]
+#	}
 
 msg_info "Write deployment information to $DEPLOYMENT_FILE"
 echo '{' > $DEPLOYMENT_FILE
 echo -e "\t\"name\":\"${MODULE_NAME}\"," >> $DEPLOYMENT_FILE
 echo -e "\t\"type\":\"${application_type}\"," >> $DEPLOYMENT_FILE
+if [ ! "${category}" == "" ]; then
+	echo -e "\t\"category\":\"${category}\"," >> $DEPLOYMENT_FILE
+fi
 echo -e "\t\"description\":\"${description}\"," >> $DEPLOYMENT_FILE
+if [ ! "${long_description}" == "" ]; then
+	echo -e "\t\"long_description\":\"${long_description}\"," >> $DEPLOYMENT_FILE
+fi
+if [ ! "${img_url}" == "" ]; then
+	echo -e "\t\"img_url\":\"${img_url}\"," >> $DEPLOYMENT_FILE
+fi
+if [ ! "${default_middleware}" == "" ]; then
+	echo -e "\t\"default_middleware\":\"${default_middleware}\"," >> $DEPLOYMENT_FILE
+fi
+
+supported_middleware="["
+if [ ${middleware_support_android} == "true" ]; then
+	supported_middleware="$supported_middleware \"android\","
+fi
+if [ ${middleware_support_yarp} == "true" ]; then
+	supported_middleware="$supported_middleware \"yarp\","
+fi
+if [ ${middleware_support_zeromq} == "true" ]; then
+	supported_middleware="$supported_middleware \"zeromq\","
+fi
+if [ ${middleware_support_ros} == "true" ]; then
+	supported_middleware="$supported_middleware \"ros\","
+fi
+supported_middleware=${supported_middleware%*,}
+supported_middleware="$supported_middleware ],"
+echo -e "\t\"supported_middleware\":${supported_middleware}" >> $DEPLOYMENT_FILE
+
+supported_devices="["
+if [ ${device_support_android} == "true" ]; then
+	supported_devices="$supported_devices \"android\","
+fi
+if [ ${device_support_raspberrypi} == "true" ]; then
+	supported_devices="$supported_devices \"raspberrypi\","
+fi
+if [ ${device_support_ubuntu} == "true" ]; then
+	supported_devices="$supported_devices \"ubuntu\","
+fi
+supported_devices=${supported_devices%*,}
+supported_devices="$supported_devices ],"
+echo -e "\t\"supported_devices\":${supported_devices}" >> $DEPLOYMENT_FILE
+
 echo -e "\t\"enable\":\"${enable}\"," >> $DEPLOYMENT_FILE
 echo -e "\t\"android\": {" >> $DEPLOYMENT_FILE
 echo -e "\t\t\"package\":\"${android_package}\"," >> $DEPLOYMENT_FILE
