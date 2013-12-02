@@ -116,8 +116,8 @@ awk '!x[$1]++' FS=\= reversed.txt | tac > "${AIM_REGISTRY}"
 rm reversed.txt
 
 # Create registry directory with port names for each module
-msg_info "Use rur-builder with specific backend \"extract\" to extract the ports from the idl file"
-if [ ! -e "${RUR_BACKENDS_PATH}/extract.py" ]; then
+msg_info "Use rur-builder with specific backend \"rur_extract\" to extract the ports from the idl file"
+if [ ! -e "${RUR_BACKENDS_PATH}/rur_extract.py" ]; then
 	msg_error "There is no extract backend in ${RUR_BACKENDS_PATH}. Did you install a recent version of the rur-builder?"
 	exit 0
 fi
