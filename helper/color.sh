@@ -26,6 +26,9 @@ colors() {
 
 colors
 
+# Set logo to true or false
+logo=false
+
 msg_hello() {
                                           
 echo -e ${BlueF}                                         
@@ -71,7 +74,9 @@ echo -e ${Reset}
 msg_prefix="#"
 msg_init() {
 	msg_prefix=$1
-	msg_hello
+	if $logo ; then
+		msg_hello
+	fi
 }
 
 msg_error() {

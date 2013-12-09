@@ -46,10 +46,19 @@ else
 fi
 
 #######################################################################################################################
+# Delete previous stuff
+#######################################################################################################################
+
+rm -f tmp
+rm -f tmp.json
+rm -f tmp.json.tmp
+rm -f browse.aim
+
+#######################################################################################################################
 # Implementation
 #######################################################################################################################
 
-# echo "Run curl with: " https://github.com/search?q=aim-config+in:path+config.aim+extension:aim&type=Code
+# echo "Run curl with: " https://github.com/search?q=aim-deployment.json+in:path+aim-core&type=Code
 
 # do NOT use quotes here
 search_file=aim_deployment.json
@@ -57,8 +66,16 @@ search_file=aim_deployment.json
 # do NOT use quotes here
 search_str=https://github.com/search\?q\=$search_file+in%3Apath+aim-core\&type\=Code
 
+# actually, we should use the API (but it is constrained to specific repositories)
+# so we first need to search through repositories
+#search_str=https://api.github.com/search/repositories\?q\=....
+#search_str=https://api.github.com/search/code\?q\=$search_file+in%3Apath+aim-core
+
 msg_info "Use as link: $search_str"
-#search_str="https://github.com/search\?q\=aim-config+in%3Apath+config.aim+extension%3Aaim\&type\=Code"
+
+# for testing
+# curl -s $search_str
+# exit
 
 # again, do NOT use quotes here
 text=$(curl -s $search_str | grep $search_file | grep title | grep href)

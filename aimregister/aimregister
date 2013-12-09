@@ -59,7 +59,12 @@ if [[ "$1" == "" ]]; then
 	msg_info "We will try to make $MODULE_NAME"
 	cd ..
 else
+	
 	MODULE_NAME=${1%/}
+#	MODULE_NAME=${1%}
+	BASE_NAME=`dirname $MODULE_NAME`
+	cd $BASE_NAME	
+	MODULE_NAME=`basename $MODULE_NAME`
 fi
 
 #######################################################################################################################
