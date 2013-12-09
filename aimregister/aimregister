@@ -41,8 +41,7 @@ fi
 # Check if we have sudo rights, we should NOT
 if [ `id -u` -eq 0 ]
 then
-	msg_error "Sorry, should NOT be run as super user":
-	exit 1
+	msg_warning "You run it as super user, most often this is NOT necessary"
 fi
 
 if [[ "$1" == "-h" ]]
@@ -61,10 +60,9 @@ if [[ "$1" == "" ]]; then
 else
 	
 	MODULE_NAME=${1%/}
-#	MODULE_NAME=${1%}
-	BASE_NAME=`dirname $MODULE_NAME`
+	BASE_NAME=$(dirname $MODULE_NAME)
 	cd $BASE_NAME	
-	MODULE_NAME=`basename $MODULE_NAME`
+	MODULE_NAME=$(basename $MODULE_NAME)
 fi
 
 #######################################################################################################################
