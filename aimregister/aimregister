@@ -201,16 +201,16 @@ if [ ! "${default_middleware}" == "" ]; then
 fi
 
 supported_middleware="["
-if [ ${middleware_support_android} == "true" ]; then
+if [ "${middleware_support_android}" == "true" ]; then
 	supported_middleware="$supported_middleware \"android\","
 fi
-if [ ${middleware_support_yarp} == "true" ]; then
+if [ "${middleware_support_yarp}" == "true" ]; then
 	supported_middleware="$supported_middleware \"yarp\","
 fi
-if [ ${middleware_support_zeromq} == "true" ]; then
+if [ "${middleware_support_zeromq}" == "true" ]; then
 	supported_middleware="$supported_middleware \"zeromq\","
 fi
-if [ ${middleware_support_ros} == "true" ]; then
+if [ "${middleware_support_ros}" == "true" ]; then
 	supported_middleware="$supported_middleware \"ros\","
 fi
 supported_middleware=${supported_middleware%*,}
@@ -218,13 +218,13 @@ supported_middleware="$supported_middleware ],"
 echo -e "\t\"supported_middleware\":${supported_middleware}" >> $DEPLOYMENT_FILE
 
 supported_devices="["
-if [ ${device_support_android} == "true" ]; then
+if [ "${device_support_android}" == "true" ]; then
 	supported_devices="$supported_devices \"android\","
 fi
-if [ ${device_support_raspberrypi} == "true" ]; then
+if [ "${device_support_raspberrypi}" == "true" ]; then
 	supported_devices="$supported_devices \"raspberrypi\","
 fi
-if [ ${device_support_ubuntu} == "true" ]; then
+if [ "${device_support_ubuntu}" == "true" ]; then
 	supported_devices="$supported_devices \"ubuntu\","
 fi
 supported_devices=${supported_devices%*,}
