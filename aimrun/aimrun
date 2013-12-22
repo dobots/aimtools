@@ -46,25 +46,34 @@ fi
 
 if [[ "$1" == "-h" ]]
 then
-	echo $PROGRAM $VERSION \- Usage
+	echo "$PROGRAM $VERSION - Usage"
 	echo 
-	echo $PROGRAM \"ModuleName\" \"ModuleId\"
+	echo "$PROGRAM \"[module name]\" \"module id\""
 	echo
 	exit 0 
 fi 
 
-if [[ $# -ne 2 ]]
-then
-	msg_error "We need two parameters. Run $0 -h for more info, currently you used $# parameters"
+if [[ $# -lt 1 ]]; then
+	msg_error "We need at least 1 parameter. Run $0 -h for more info, currently you used $# parameters"
 	exit 1
+fi
+
+if [[ "$2" == "" ]]; then
+	# there is only one argument, so $1 must then be the module id, and it must be run from the directory itself
+	modulename=${PWD##*/}
+	cd ..
+	ModuleId=$1
+else
+	modulename=${1%/}
+	ModuleId=$2
+
+	# Shift so, $@ becomes second argument (id) and further on
+	shift
 fi
 
 #######################################################################################################################
 # Start
 #######################################################################################################################
-
-MODULE_NAME=${1%/}
-ModuleId=${2%/}
 
 msg_info "Search in ${AIM_REGISTRY}"
 SUCCESS=false
@@ -73,8 +82,8 @@ while read LINE; do
 	MODULE_I=`echo "$LINE" | cut -d'=' -f 1`
 	M_I_STRIPPED=${MODULE_I//[[:space:]]}
 #	echo $M_I_STRIPPED
-	if [[ "$M_I_STRIPPED" == "$1" ]]; then
-#		echo "$MODULE_NAME found. Run it"
+	if [[ "$M_I_STRIPPED" == "$modulename" ]]; then
+#		echo "$modulename found. Run it"
 		MODULE_FULLNAME=`echo "$LINE" | cut -d'=' -f 2`
 		SUCCESS=true
 		break
@@ -88,19 +97,16 @@ msg_info "Running for middleware \"$middleware\" and platform \"$target\""
 
 BUILD_FOLDER=builds/${middleware}
 
-# Shift so, $@ becomes second argument (id) and further on
-shift
-
 if [[ $SUCCESS == true ]]; then
-	msg_info "Run: \"$MODULE_FULLNAME/$BUILD_FOLDER/$MODULE_NAME $@\" (includes all command-line arguments)"
+	msg_info "Run: \"$MODULE_FULLNAME/$BUILD_FOLDER/$modulename $@\" (includes all command-line arguments)"
 	msg_info "The output of the module itself is in between two horizontal lines:"
 	echo "--------------------------------------------------------------------------------"
-	$MODULE_FULLNAME/$BUILD_FOLDER/$MODULE_NAME "$@"
+	$MODULE_FULLNAME/$BUILD_FOLDER/$modulename "$@"
 	echo "--------------------------------------------------------------------------------"
-	msg_info "Exit of \"$MODULE_NAME\" (error code is not returned)"
+	msg_info "Exit of \"$modulename\" (error code is not returned)"
 	exit 0
 else
-	msg_warning "No such module found ($MODULE_NAME). Did you use aimregister to register this module on this machine?"
+	msg_warning "No such module found ($modulename). Did you use aimregister to register this module on this machine?"
 	exit 1
 fi
 
