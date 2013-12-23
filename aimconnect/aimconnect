@@ -115,7 +115,7 @@ done < "${AIM_REGISTRY}"
 
 
 if [ $SUCCESS1 == true ] && [ $SUCCESS2 == true ]; then
-	msg_info"Connect $MODULE_NAME1 and $MODULE_NAME2"
+	msg_info "Connect $MODULE_NAME1 and $MODULE_NAME2"
 	msg_info "Exact command: /${MODULE_NAME1,,}$MODULE_ID1/$PORT_NAME1 /${MODULE_NAME2,,}$MODULE_ID2/$PORT_NAME2"
 #	sleep 1
 	$CONNECT_UTILITY /${MODULE_NAME1,,}$MODULE_ID1/$PORT_NAME1 /${MODULE_NAME2,,}$MODULE_ID2/$PORT_NAME2
