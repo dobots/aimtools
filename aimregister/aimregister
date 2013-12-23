@@ -135,6 +135,10 @@ if [ "${application_type}" == "" ]; then
 	msg_error "Please, set \"application_type\" in $CONFIG_FILE" 
 	exit
 fi
+if [ "${version}" == "" ]; then
+	msg_error "Please, set \"version\" to an integer value in $CONFIG_FILE"
+	exit
+fi
 if [ "${android_package}" == "" ]; then
 	msg_error "Please, set \"android_package\" in $CONFIG_FILE" 
 	exit
@@ -148,7 +152,7 @@ if [ "${description}" == "" ]; then
 	exit
 fi
 if [ "${enable}" == "" ]; then
-	msg_error "Please, set \"enable\" in $CONFIG_FILE" 
+	msg_error "Please, set \"enable\" to 'true' or 'false' in $CONFIG_FILE" 
 	exit
 fi
 
@@ -189,6 +193,8 @@ msg_info "Write deployment information to $DEPLOYMENT_FILE"
 echo '{' > $DEPLOYMENT_FILE
 echo -e "\t\"name\":\"${MODULE_NAME}\"," >> $DEPLOYMENT_FILE
 echo -e "\t\"type\":\"${application_type}\"," >> $DEPLOYMENT_FILE
+echo -e "\t\"version\":\"${version}\"," >> $DEPLOYMENT_FILE
+
 if [ ! "${category}" == "" ]; then
 	echo -e "\t\"category\":\"${category}\"," >> $DEPLOYMENT_FILE
 fi
