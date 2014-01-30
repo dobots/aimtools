@@ -134,9 +134,9 @@ set_logging() {
 # so create the script file in the parent directory ..
 check_errors() {
 	msg_debug "Check for errors"
-	CHECK_FOR_ERROR="egrep '(error|instantiated from|relocation truncated)'"
+	CHECK_FOR_ERROR="egrep -i '(error|instantiated from|relocation truncated)'"
 	CHECK_FOR_ERROR_CMD="cat ${LOG_FILE} | ${CHECK_FOR_ERROR} | head -n 1"
-	ERRORS=`eval ${CHECK_FOR_ERROR_CMD}`
+	ERRORS=$(eval ${CHECK_FOR_ERROR_CMD})
 	ERROR_SCRIPT=../check_error.sh
 	rm -f ${ERROR_SCRIPT}
 	if [ -n "$ERRORS" ]; then
