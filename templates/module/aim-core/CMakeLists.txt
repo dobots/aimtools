@@ -198,7 +198,7 @@ IF (${MIDDLEWARE} STREQUAL "zeromq")
 	SET(LIBS ${LIBS} ${JSON_SPIRIT_LIBRARIES})
 
 	# Currently tacitly assuming rt is always there...
-	SET(LIBS ${LIBS} rt)
+	SET(LIBS ${LIBS} rt pthread)
 ENDIF()
 
 IF (${MIDDLEWARE} STREQUAL "nodejs")
