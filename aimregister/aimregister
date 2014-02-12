@@ -44,21 +44,33 @@ then
 	msg_warning "You run it as super user, most often this is NOT necessary"
 fi
 
-if [[ "$1" == "-h" ]]
-then
-	echo $PROGRAM $VERSION \- Usage
-	echo 
-	echo $PROGRAM \"ModuleName\"
-	echo
-	exit 0 
-fi 
+AIM_MODULE_PREFIX=""
+while getopts ":g:h" options; do
+	case $options in
+		h)
+			echo $PROGRAM $VERSION \- Usage
+			echo 
+			echo $PROGRAM \"ModuleName\"
+			echo
+			exit 0
+			;;
+		g)
+			AIM_MODULE_PREFIX="${OPTARG%/}/"
+			;;	
+		:)
+			echo "Option -$OPTARG requires an argument." >&2
+			exit 1
+			;;
+	esac
+shift $(($OPTIND - 1))
+done
+
 
 if [[ "$1" == "" ]]; then
 	MODULE_NAME=${PWD##*/}
 	msg_info "We will try to make $MODULE_NAME"
 	cd ..
 else
-	
 	MODULE_NAME=${1%/}
 	BASE_NAME=$(dirname $MODULE_NAME)
 	cd $BASE_NAME	
@@ -110,7 +122,7 @@ fi
 FULL_MODULE_NAME="$(readlink --canonicalize --no-newline $MODULE_NAME)"
 msg_info "Full name to register: ${FULL_MODULE_NAME}"
 
-echo "$MODULE_NAME = $FULL_MODULE_NAME" >> "${AIM_REGISTRY}"
+echo "$AIM_MODULE_PREFIX$MODULE_NAME = $FULL_MODULE_NAME" >> "${AIM_REGISTRY}"
 
 # Remove duplicate entries
 msg_info "Remove duplicate entries from registry"
@@ -191,7 +203,7 @@ fi
 
 msg_info "Write deployment information to $DEPLOYMENT_FILE"
 echo '{' > $DEPLOYMENT_FILE
-echo -e "\t\"name\":\"${MODULE_NAME}\"," >> $DEPLOYMENT_FILE
+echo -e "\t\"name\":\"${AIM_MODULE_PREFIX}${MODULE_NAME}\"," >> $DEPLOYMENT_FILE
 echo -e "\t\"type\":\"${application_type}\"," >> $DEPLOYMENT_FILE
 echo -e "\t\"version\":\"${version}\"," >> $DEPLOYMENT_FILE
 
