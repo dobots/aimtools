@@ -14,6 +14,7 @@ AIM_CONFIG_FILE=/etc/aim/config.sh
 source $AIM_CONFIG_FILE
 source $AIM_CONFIG_COLOR
 source $AIM_CONFIG_SANITY
+source $AIM_CONFIG_REGISTRY_CHECK
 
 msg_init $PROGRAM
 
@@ -86,33 +87,26 @@ elif [[ $MIDDLEWARE == "zeromq" ]]; then
 fi
 
 
-msg_debug "Search in ${RUR_HOME}/${AIM_REGISTRY}"
+msg_debug "Search in ${AIM_REGISTRY}"
 SUCCESS1=false
 SUCCESS2=false
 
-MODULE_FULLNAME=
-while read LINE; do
-	MODULE_I=$(echo "$LINE" | cut -d'=' -f 1)
-	M_I_STRIPPED=${MODULE_I//[[:space:]]}
-	if [[  ${MODULE_NAME1} == ${M_I_STRIPPED}*  ]]; then
-		msg_debug "$MODULE_NAME1 found. prepare to connect it"
-		MODULE_FULLNAME=$(echo "$LINE" | cut -d'=' -f 2)
-		SUCCESS1=true
-		break
-	fi
-done < "${AIM_REGISTRY}"
+msg_info "Search in ${AIM_REGISTRY}"
+reg_check $MODULE_NAME1 MODULEFULLNAME
+if [[ "$MODULEFULLNAME" != "" ]]; then
+	SUCCESS1=true
+fi
 
-while read LINE; do
-	MODULE_I=$(echo "$LINE" | cut -d'=' -f 1)
-	M_I_STRIPPED=${MODULE_I//[[:space:]]}
-	if [[  ${MODULE_NAME2} == $M_I_STRIPPED* ]]; then
-		msg_debug "$MODULE_NAME2 found. prepare to connect it"
-		MODULE_FULLNAME=$(echo "$LINE" | cut -d'=' -f 2)
-		SUCCESS2=true
-		break
-	fi
-done < "${AIM_REGISTRY}"
+reg_check $MODULE_NAME2 MODULEFULLNAME
+if [[ "$MODULEFULLNAME" != "" ]]; then
+	SUCCESS2=true
+fi
 
+
+
+# After having found the location in the registry, remove the reference to git/repo from the modulename to properly connect the modules
+MODULE_NAME1=$(basename $MODULE_NAME1)
+MODULE_NAME2=$(basename $MODULE_NAME2)
 
 if [ $SUCCESS1 == true ] && [ $SUCCESS2 == true ]; then
 	msg_info "Connect $MODULE_NAME1 and $MODULE_NAME2"

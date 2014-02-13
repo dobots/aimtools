@@ -18,6 +18,7 @@ AIM_CONFIG_FILE=/etc/aim/config.sh
 source $AIM_CONFIG_FILE
 source $AIM_CONFIG_COLOR
 source $AIM_CONFIG_SANITY
+source $AIM_CONFIG_REGISTRY_CHECK
 
 msg_init $PROGRAM
 
@@ -77,31 +78,26 @@ fi
 
 msg_info "Search in ${AIM_REGISTRY}"
 SUCCESS=false
-MODULE_FULLNAME=
-while read LINE; do
-	MODULE_I=`echo "$LINE" | cut -d'=' -f 1`
-	M_I_STRIPPED=${MODULE_I//[[:space:]]}
-#	echo $M_I_STRIPPED
-	if [[ "$M_I_STRIPPED" == "$modulename" ]]; then
-#		echo "$modulename found. Run it"
-		MODULE_FULLNAME=`echo "$LINE" | cut -d'=' -f 2`
-		SUCCESS=true
-		break
-	fi
-done < "${AIM_REGISTRY}"
+reg_check $modulename MODULEFULLNAME
+if [[ "$MODULEFULLNAME" != "" ]]; then
+	SUCCESS=true
+fi
 
 target=host
-source ${MODULE_FULLNAME}/aim-core/middleware_default.aim
-source ${MODULE_FULLNAME}/aim-devel/middleware_local.aim
+source ${MODULEFULLNAME}/aim-core/middleware_default.aim
+source ${MODULEFULLNAME}/aim-devel/middleware_local.aim
 msg_info "Running for middleware \"$middleware\" and platform \"$target\""
 
 BUILD_FOLDER=builds/${middleware}
 
+# After having found the location in the registry, remove the reference to git/repo from the modulename to properly start the module
+modulename=$(basename $modulename)
+
 if [[ $SUCCESS == true ]]; then
-	msg_info "Run: \"$MODULE_FULLNAME/$BUILD_FOLDER/$modulename $@\" (includes all command-line arguments)"
+	msg_info "Run: \"$MODULEFULLNAME/$BUILD_FOLDER/$modulename $@\" (includes all command-line arguments)"
 	msg_info "The output of the module itself is in between two horizontal lines:"
 	echo "--------------------------------------------------------------------------------"
-	$MODULE_FULLNAME/$BUILD_FOLDER/$modulename "$@"
+	$MODULEFULLNAME/$BUILD_FOLDER/$modulename "$@"
 	echo "--------------------------------------------------------------------------------"
 	msg_info "Exit of \"$modulename\" (error code is not returned)"
 	exit 0

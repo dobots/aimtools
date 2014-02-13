@@ -14,6 +14,7 @@ AIM_CONFIG_FILE=/etc/aim/config.sh
 source $AIM_CONFIG_FILE
 source $AIM_CONFIG_COLOR
 source $AIM_CONFIG_SANITY
+source $AIM_CONFIG_REGISTRY_CHECK
 
 msg_init $PROGRAM
 
@@ -53,18 +54,16 @@ MIDDLEWARE=${1%}
 MODULE_NAME=${2%/}
 ModuleId=${3%/}
 
-msg_debug "Search in ${RUR_HOME}/${AIM_REGISTRY}"
+# read the registry and find the location of the module
+msg_info "Search in ${AIM_REGISTRY}"
 SUCCESS=false
-MODULE_FULLNAME=
-while read LINE; do
-	MODULE_I=$(echo "$LINE" | cut -d'=' -f 1)
-	M_I_STRIPPED=${MODULE_I//[[:space:]]}
-	if [[ "$M_I_STRIPPED" == "$MODULE_NAME" ]]; then
-		MODULE_FULLNAME=$(echo "$LINE" | cut -d'=' -f 2)
-		SUCCESS=true
-		break
-	fi
-done < "${AIM_REGISTRY}"
+reg_check $MODULE_NAME MODULEFULLNAME
+if [[ "$MODULEFULLNAME" != "" ]]; then
+	SUCCESS=true
+fi
+
+# After having found the location in the registry, remove the reference to git/repo from the modulename to properly start the module
+MODULE_NAME=$(basename $MODULE_NAME)
 
 index=0
 Registered_port={}
