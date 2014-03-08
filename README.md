@@ -17,7 +17,7 @@ The maturity of this software can be improved. However, it has been used already
 There are no known alternatives. Most modular approaches tie the user to a certain middleware (but do allow you to use different programming languages).
 
 ## How to install?
-The AIM tools work together with the [rur-builder](https://github.com/dobotos/rur-builder). This needs to be installed first, follow the [insructions](https://github.com/dobots/rur-builder#installation).
+The AIM tools work together with the [rur-builder](https://github.com/dobotos/rur-builder). This needs to be installed first, follow the [instructions](https://github.com/dobots/rur-builder#installation).
 
 
 Set the installation path, on Linux systems this is most often `/opt`, but it is up to you, let us say you want to use `~/Downloads`:
