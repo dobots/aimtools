@@ -1,7 +1,7 @@
 <!-- Uses markdown syntax for neat display at github -->
 
 # AIM Tools
-AIM stands for Artificial Intelligence Modules ([AIM website](http://dobots.github.io/aim-bzr/)).
+AIM stands for Artificial Intelligence Modules ([AIM website](http://dobots.github.io/aim/)).
 
 ## What does it do?
 The AIM tools are meant for management of separate modules that each have AI functionality. They can be compared with the utilities that are provided with ROS, such as roscreate-pkg etc (of which we were not aware at the time), or with nodejs, such as npm (of which we were neither aware). The tools work together with the [rur-builder](https://github.com/dobots/rur-builder), a (python) backend for omniidl. 
