@@ -1,0 +1,116 @@
+#!/bin/bash
+
+# Author: Anne C. van Rossum
+# License: GNU LGPLv3
+# Date: Jun. 17, 2012
+
+PROGRAM="aiminfo"
+
+VERSION="0.3"
+
+#######################################################################################################################
+# Default configuration
+#######################################################################################################################
+
+AIM_CONFIG_PATH=/etc/aim
+AIM_CONFIG_FILE=/etc/aim/config.sh
+
+source $AIM_CONFIG_FILE
+source $AIM_CONFIG_COLOR
+source $AIM_CONFIG_SANITY
+
+msg_init $PROGRAM
+
+#######################################################################################################################
+# User configuration
+#######################################################################################################################
+
+if [ -e ${RUR_CONFIG_FILE_BACKENDS} ]; then
+	source $RUR_CONFIG_FILE_BACKENDS
+fi
+
+#######################################################################################################################
+# Argument checks
+#######################################################################################################################
+
+if [[ $AIM_VERSION != $VERSION ]]; then
+	msg_error "${PROGRAM} is version ${VERSION}, while it should be version ${AIM_VERSION}."
+	exit 0
+fi
+
+if [[ "$1" == "-h" ]]
+then
+	echo $PROGRAM $VERSION \- Usage
+	echo
+	echo "$PROGRAM \"ModuleName\" "
+	echo "$PROGRAM \"ModuleName\" -b [STANDARD|YARP|ROS|ZEROMQ|NODEJS]"
+	echo
+	exit 0
+fi
+
+if [[ "$1" == "" ]]; then
+	modulename=${PWD##*/}
+	msg_info "We will try to make $modulename"
+	# go one directory up to make process the same as if run from the parent directory
+	cd ..
+else
+	modulename=${1%/}
+	shift
+fi
+
+####################################################################################################
+# Specific checks
+####################################################################################################
+
+aim_sanity $modulename error
+if [[ "$error" != 0 ]]; then
+	msg_error "Module name check failed, there are many reasons to construct a specific name of the form \"*Module\". The main reason here is to allow easy checks on execution on a server. Although the modules created by aimcreate-pkg should run in for example a Linux Container, remote execution of modules is key to many applications. Hence, it is nice to be able to perform some basic checking if there are no system utilities called by third parties. Although only binaries should be called that are registered by aim-registry a specific naming convention allows for an additional sanity check."
+	exit 1
+fi
+
+####################################################################################################
+# Functions
+####################################################################################################
+
+include () {
+	test -f "$1" && source "$1"
+}
+
+display_personal_info() {
+	working_path=$1
+	
+	if [ -e $HOME/.rur/personal_info.txt ]; then
+		msg_info "Use $HOME/.rur/personal_info.txt for user information"
+		source $HOME/.rur/personal_info.txt
+	else
+		msg_info "Use $RUR_CONFIG_PATH/personal_info.txt for user information"
+		source $RUR_CONFIG_PATH/personal_info.txt
+	fi
+
+	msg_info "Your name: $yourname"
+	msg_info "Your email address: $youremail"
+	msg_info "Your organisation: $yourorganisation"
+	msg_info "Your project: $yourproject"
+	msg_info "License to use: $license, abbreviated $license_abbreviation"
+}
+
+####################################################################################################
+# Start
+####################################################################################################
+
+msg_info "Check the module $modulename"
+cd $modulename
+
+# modulename_lower=$(echo $modulename | tr "[A-Z]" "[a-z]")
+
+display_personal_info $modulepath
+
+msg_debug "Source middleware config files"
+include aim-core/middleware_default.aim
+include aim-devel/middleware_local.aim
+include aim-config/config.aim
+
+msg_info "Currently selected middleware: ${middleware}"
+msg_debug "Found as build_folder: ${build_folder}"
+msg_info "You will find the output of the build in the folder: ${build_folder}/${middleware}"
+

@@ -47,11 +47,11 @@ then
 	echo
 	echo " aimget: add a github repository to your AIM workspace"
 	echo " aiminit: create your own local github repository in your AIM workspace"
+	echo " aiminfo: information about an AI module"
 	echo " aimcreate-pkg: create a new AI module"
 	echo " aimregister: register the module locally"
 	echo " aimselect: select a specific middleware to compile for"
 	echo " aimmake: compile the module"
-	echo " aimcross: cross-compile the module (currently supported: blackfin; upcoming: raspberry)"
 	echo " aimrun: run a previously registered module"
 	echo " aimconnect: connect two ports on running modules"
 	echo " aimstop: stop the module locally"
