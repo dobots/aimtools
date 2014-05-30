@@ -94,5 +94,5 @@ The copyrights (2012) belong to:
 
 - Author: Anne van Rossum
 - Author: Scott Guo
-- Almende B.V., http://www.almende.com and DO bots B.V., http://www.dobots.nl
+- Almende B.V., http://www.almende.com and DoBots B.V., http://www.dobots.nl
 - Rotterdam, The Netherlands
