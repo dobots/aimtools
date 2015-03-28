@@ -84,10 +84,15 @@ fi
 update_personal_info() {
 	working_path=$1
 	
-	if [ -e $HOME/.rur/personal_info.txt ]; then
-		source $HOME/.rur/personal_info.txt
-	else
-		source $RUR_CONFIG_PATH/personal_info.txt
+	# Get personal info from user for author, copyright, and license info
+	user_personal_info_file=$HOME/.rur/personal_info.txt
+	default_personal_info_file=$RUR_CONFIG_PATH/personal_info.txt
+	[ -e $user_personal_info_file ] && personal_info=$user_personal_info_file || 
+		personal_info=$default_personal_info_file
+	source $personal_info
+	default_email_contains="chunky"
+	if [[ $youremail =~ $default_email_contains ]]; then
+		msg_warning "The email address we use from ${personal_info} seems to be the default one. Consider creating the file \"${user_personal_info_file}\" and use \"$default_personal_info_file\" as inspiration." 
 	fi
 	find $working_path -not -iwholename '*.svn' -type f | xargs sed -i -e "s|\${yourname}|$yourname|g"
 	find $working_path -not -iwholename '*.svn' -type f | xargs sed -i -e "s|\${youremail}|$youremail|g"
